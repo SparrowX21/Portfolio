@@ -422,6 +422,7 @@
     document.querySelectorAll('[data-count]').forEach(function (el) {
       var end = parseFloat(el.getAttribute('data-count'));
       var group = el.hasAttribute('data-group');
+      var decimals = parseInt(el.getAttribute('data-decimals') || '0', 10);
       var plus = el.hasAttribute('data-plus');
       var stat = el.closest('.stat');
       var line = stat && stat.querySelector('.stat__line');
@@ -429,8 +430,8 @@
       // The element animated here is aria-hidden; a sibling .sr-only span
       // always holds the real number, and the HTML ships with it too.
       function write(v) {
-        var n = Math.round(v);
-        var body = group ? n.toLocaleString('en-US') : String(n);
+        var n = decimals ? Number(v.toFixed(decimals)) : Math.round(v);
+        var body = decimals ? n.toFixed(decimals) : group ? n.toLocaleString('en-US') : String(n);
         el.innerHTML = body + (plus ? '<b class="stat__plus">+</b>' : '');
       }
 
@@ -481,7 +482,7 @@
     });
     if (!hero.hoverLayer) return;
     // Below 901px there is no pin, so only the cursor opens the plate.
-    gsap.matchMedia().add('(max-width: 900px)', function () { hint('Move over the plate to open it'); });
+    gsap.matchMedia().add('(max-width: 900px), (max-height: 599px)', function () { hint('Move over the plate to open it'); });
 
     // Scroll controls how far the plate opens; the cursor controls where.
     var hovering = false;
@@ -499,7 +500,7 @@
       if (scrollR > 0) settleToScroll();
     });
 
-    gsap.matchMedia().add('(min-width: 901px)', function () {
+    gsap.matchMedia().add('(min-width: 901px) and (min-height: 600px)', function () {
       hint('Scroll to open · move to look');
       var tl = gsap.timeline({
         scrollTrigger: {
@@ -587,7 +588,7 @@
     // The three cards are 1936px wide at most. Past ~1735px there is too
     // little horizontal travel to be worth a pin, so the row just sits still.
     var mm = gsap.matchMedia();
-    mm.add('(min-width: 801px) and (max-width: 1735px)', function () {
+    mm.add('(min-width: 801px) and (max-width: 1735px) and (min-height: 600px)', function () {
       function travel() { return Math.max(0, track.scrollWidth - document.documentElement.clientWidth); }
       var st = null;
       var tween = gsap.to(track, {
@@ -626,7 +627,7 @@
       return function () { wrap.classList.remove('is-static'); };
     });
 
-    mm.add('(max-width: 800px)', function () {
+    mm.add('(max-width: 800px), (max-width: 1735px) and (max-height: 599px)', function () {
       wrap.classList.add('is-stacked');
       track.style.flexDirection = 'column';
       track.style.height = 'auto';
@@ -806,6 +807,26 @@
       }, { passive: true });
     }
 
+    var menu = document.getElementById('menuToggle');
+    var links = document.getElementById('navLinks');
+    if (nav && menu && links) {
+      var setOpen = function (open) {
+        nav.classList.toggle('is-open', open);
+        menu.setAttribute('aria-expanded', open ? 'true' : 'false');
+        var label = menu.querySelector('span');
+        if (label) label.textContent = open ? 'Close' : 'Menu';
+      };
+      menu.addEventListener('click', function () { setOpen(!nav.classList.contains('is-open')); });
+      links.addEventListener('click', function (e) { if (e.target.closest('a')) setOpen(false); });
+      document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape' && nav.classList.contains('is-open')) { setOpen(false); menu.focus(); }
+      });
+      document.addEventListener('click', function (e) {
+        if (nav.classList.contains('is-open') && !nav.contains(e.target)) setOpen(false);
+      });
+      matchMedia('(min-width: 1001px)').addEventListener('change', function (m) { if (m.matches) setOpen(false); });
+    }
+
     var form = document.getElementById('requestForm');
     var status = document.getElementById('formStatus');
     if (!form) return;
@@ -850,7 +871,7 @@
     bar.setAttribute('role', 'status');
     bar.innerHTML =
       '<span>' + message + '</span>' +
-      '<a class="lite-offer__go" href="lite.html">Use lite</a>' +
+      '<a class="lite-offer__go" href="lite.html">Use light version</a>' +
       '<button class="lite-offer__no" type="button">No thanks</button>';
     document.body.insertBefore(bar, document.body.firstChild);
 
@@ -860,12 +881,13 @@
   }
 
   // Hardware hints are only a proxy, so they earn an offer, never a decision.
+  // WebKit reports hardwareConcurrency as 4 on every iPhone, so core count is
+  // left out; measured frame rate (autoLite) covers genuinely slow devices.
   function liteOffer() {
-    var cores = navigator.hardwareConcurrency;
+    if (REDUCED) return;
     var mem = navigator.deviceMemory;
     var save = navigator.connection && navigator.connection.saveData;
-    var weak = (typeof cores === 'number' && cores <= 4) ||
-               (typeof mem === 'number' && mem <= 4) || save === true;
+    var weak = (typeof mem === 'number' && mem <= 2) || save === true;
     if (weak) offerLite('Lots of animation on this page. There is a lighter version.');
   }
 

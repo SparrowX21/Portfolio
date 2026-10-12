@@ -86,10 +86,11 @@ body::before {
 body::after {
   content: "";
   position: fixed; inset: 0;
-  background: radial-gradient(ellipse at center, transparent 55%, rgba(0,0,0,0.55) 100%);
+  background: radial-gradient(ellipse at center, transparent 65%, rgba(0,0,0,0.35) 100%);
   pointer-events: none;
   z-index: 199;
 }
+@media (max-width: 900px) { body::after { display: none; } }
 
 ::selection { background: var(--plasma); color: var(--void); }
 
@@ -265,7 +266,8 @@ html { scroll-padding-top: 5.5rem; }
 .nav__links a:hover::after { transform: scaleX(1); }
 .nav__end { display: flex; align-items: center; gap: 0.6rem; }
 .nav__motion {
-  display: inline-flex; align-items: center; gap: 0.5rem;
+  display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem;
+  min-width: 44px; min-height: 44px;
   padding: 0.6rem 0.9rem;
   border: 1px solid var(--edge);
   border-radius: 999px;
@@ -310,9 +312,52 @@ html { scroll-padding-top: 5.5rem; }
   .nav__motion { padding: 0.6rem 0.75rem; }
   .nav__motion span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 }
-@media (max-width: 1000px) {
-  .nav__links { display: none; }
+.nav__menu {
+  display: none;
+  align-items: center; justify-content: center; gap: 0.5rem;
+  min-width: 44px; min-height: 44px;
+  padding: 0 0.85rem;
+  border: 1px solid var(--edge);
+  border-radius: 999px;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--paper);
+  background: rgba(16,18,20,0.6);
 }
+.nav__menu i {
+  width: 14px; height: 8px;
+  border-top: 2px solid currentColor;
+  border-bottom: 2px solid currentColor;
+  transition: transform 0.3s var(--ease-out);
+}
+.nav__menu[aria-expanded="true"] i { transform: scaleY(0.25); }
+@media (max-width: 1000px) {
+  html.no-js .nav { flex-wrap: wrap; row-gap: 0.6rem; }
+  html.no-js .nav__links { order: 3; flex: 0 0 100%; flex-wrap: wrap; }
+  html.js .nav__links { display: none; }
+  html.js .nav__menu { display: inline-flex; }
+  html.js .nav.is-open { background: rgba(7,8,9,0.96); border-bottom-color: var(--edge-soft); }
+  html.js .nav.is-open .nav__links {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    position: absolute;
+    top: 100%; left: 0; right: 0;
+    padding: 0.4rem var(--gutter) 1.2rem;
+    background: rgba(7,8,9,0.96);
+    border-bottom: 1px solid var(--edge-soft);
+    font-size: 0.9rem;
+  }
+  html.js .nav.is-open .nav__links a {
+    padding: 0.95rem 0;
+    border-bottom: 1px solid var(--edge-soft);
+    color: var(--paper);
+  }
+  html.js .nav.is-open .nav__links a::after { display: none; }
+}
+@media (max-width: 420px) { .nav__menu span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; } }
 @media (max-width: 480px) {
   .nav__name { display: none; }
 }
@@ -783,7 +828,8 @@ html { scroll-padding-top: 5.5rem; }
 }
 .rolodex.is-stacked .chapter { flex: 0 0 auto; min-height: 0; }
 .rolodex.is-static .chapter { flex: 1 1 0; min-width: 0; }
-.rolodex.is-static .rolodex__hint { display: none; }
+.rolodex.is-static .rolodex__hint,
+.rolodex.is-stacked .rolodex__hint { display: none; }
 
 /* ---------- research ---------- */
 .research { padding-bottom: 6rem; }
@@ -805,7 +851,7 @@ html { scroll-padding-top: 5.5rem; }
   gap: 1rem;
   transition: border-color 0.5s var(--ease-out), translate 0.6s var(--ease-out);
 }
-.paper:hover { border-color: var(--trim); translate: 0 -4px; }
+@media (hover: hover) { .paper:hover { border-color: var(--trim); translate: 0 -4px; } }
 .paper--lead { grid-column: 1 / -1; background: linear-gradient(140deg, var(--panel), var(--graphite)); }
 .paper--lead .paper__title { font-size: clamp(1.6rem, 2.6vw, 2.6rem); }
 .paper__meta {
@@ -1111,7 +1157,7 @@ html { scroll-padding-top: 5.5rem; }
   position: relative;
   transition: border-color 0.5s var(--ease-out), translate 0.6s var(--ease-out);
 }
-.card:hover { border-color: var(--trim); translate: 0 -5px; }
+@media (hover: hover) { .card:hover { border-color: var(--trim); translate: 0 -5px; } }
 .card__n {
   font-family: var(--font-mono);
   font-size: 0.72rem;
@@ -1152,16 +1198,20 @@ html { scroll-padding-top: 5.5rem; }
 }
 .module {
   position: relative;
-  aspect-ratio: 1 / 1.15;
+  min-height: 22rem;
   border-radius: var(--radius);
   overflow: hidden;
   border: 1px solid var(--edge-soft);
   background: var(--carbon);
-  display: block;
-  cursor: pointer;
+  display: flex;
+  cursor: default;
   transition: border-color 0.5s var(--ease-out), translate 0.6s var(--ease-out);
 }
-.module:hover { border-color: var(--trim); translate: 0 -4px; }
+@media (hover: hover) { a.module:hover { border-color: var(--trim); translate: 0 -4px; } }
+.module__go { color: var(--plasma); white-space: nowrap; }
+a.module { cursor: pointer; }
+/* in normal flow so the card's height follows its text; the spotlight stays absolute */
+.module > .module__base { position: relative; inset: auto; width: auto; height: auto; flex: 1 1 auto; }
 .module__base {
   background: linear-gradient(160deg, var(--panel), var(--void));
   padding: 1.6rem;
@@ -1321,7 +1371,7 @@ html { scroll-padding-top: 5.5rem; }
   border-radius: 8px;
   color: var(--paper);
   font-family: var(--font-body);
-  font-size: 0.95rem;
+  font-size: max(16px, 0.95rem);
   letter-spacing: 0;
   text-transform: none;
   transition: border-color 0.3s;
@@ -1444,7 +1494,17 @@ section, .footer { position: relative; }
   text-transform: uppercase;
   letter-spacing: 0.14em;
 }
-.lite-offer__no { color: var(--steel-dim); text-transform: uppercase; letter-spacing: 0.14em; }
+.lite-offer__no { color: var(--steel-dim); text-transform: uppercase; letter-spacing: 0.14em; padding: 0.5rem 0.4rem; }
+@media (max-width: 600px) {
+  .lite-offer {
+    left: 12px; right: 12px; transform: none;
+    max-width: none;
+    flex-wrap: wrap;
+    border-radius: 14px;
+    line-height: 1.5;
+  }
+  .lite-offer span { flex: 1 0 100%; }
+}
 
 /* ---------- boot fallbacks ----------
    No JS: never show the boot screen. JS that stalls (a hung CDN): the

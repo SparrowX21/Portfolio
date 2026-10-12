@@ -23,9 +23,9 @@
 <link rel="preload" href="assets/fonts/bigshouldersdisplay-fC1_PZJEZG-e9gHhdI4-NBbfd2ys3SjJCx1czNDu.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="assets/fonts/instrumentsans-pxiTypc9vsFDm051Uf6KVwgkfoSxQ0GsQv8ToedPibnr0SZe1Q.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="assets/fonts/jetbrainsmono-tDbv2o-flEEny0FZhsfKu5WU4zr3E_BX0PnT8RD8yKwBNntkaToggR7BYRbKPxDcwg.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="assets/css/fonts.css?v=3">
+<link rel="stylesheet" href="assets/css/fonts.css?v=4">
 
-<link rel="stylesheet" href="assets/css/site.css?v=3">
+<link rel="stylesheet" href="assets/css/site.css?v=4">
 
 <meta property="og:title" content="Armaan Gugnani — AI research, systems, and a trajectory across three countries">
 <meta property="og:description" content="IEEE first author, Harvard Medical School research intern, USACO Gold, first place at the IUrban Teen × Microsoft AI Hackathon. Bangalore to Dubai to Frisco.">
@@ -97,16 +97,19 @@
     <span class="nav__mark">AG</span>
     <span class="nav__name">Armaan Gugnani</span>
   </a>
-  <nav class="nav__links" aria-label="Primary">
+  <nav class="nav__links" id="navLinks" aria-label="Primary">
     <a href="#trajectory">Trajectory</a>
     <a href="#research">Research</a>
-    <a href="#systems">Systems</a>
     <a href="#experience">Experience</a>
     <a href="#honors">Honors</a>
+    <a href="#systems">Systems</a>
     <a href="#ventures">Ventures</a>
     <a href="#contact">Contact</a>
   </nav>
   <div class="nav__end">
+    <button class="nav__menu" id="menuToggle" type="button" aria-expanded="false" aria-controls="navLinks">
+      <i aria-hidden="true"></i><span>Menu</span>
+    </button>
     <button class="nav__motion" id="motionToggle" type="button" aria-pressed="false" hidden>
       <i aria-hidden="true"></i><span>Pause motion</span>
     </button>
@@ -238,8 +241,8 @@
 
       <div class="hero__foot">
         <p class="hero__lede">
-          High school senior working at the intersection of <b>AI, data, and applied mathematics</b>.
-          Three countries, six schools, one trajectory — research, systems, and the clubs that teach the next cohort.
+          High school senior in <b>AI and applied mathematics</b>: first‑author IEEE paper, research intern at
+          <b>Harvard Medical School</b>, USACO Gold, and first place at the IUrban Teen × Microsoft AI Hackathon.
         </p>
         <div class="hero__ctas">
           <a href="#contact" class="btn btn--primary" data-magnetic><span>Get in touch</span></a>
@@ -290,11 +293,11 @@
     <div class="section__inner stats__inner">
       <p class="eyebrow"><i></i> By the numbers</p>
       <div class="stats__grid">
-        <div class="stat"><b class="stat__n"><span class="sr-only">1560</span><span aria-hidden="true" data-count="1560">1560</span></b><i class="stat__line"></i><span class="stat__lbl">SAT · out of 1600</span></div>
-        <div class="stat"><b class="stat__n"><span class="sr-only">29</span><span aria-hidden="true" data-count="29">29</span></b><span class="stat__sub">of 395</span><i class="stat__line"></i><span class="stat__lbl">Class rank · IHS</span></div>
+        <div class="stat"><b class="stat__n"><span class="sr-only">5</span><span aria-hidden="true" data-count="5">5</span></b><i class="stat__line"></i><span class="stat__lbl">Research &amp; industry internships · incl. Harvard Medical School</span></div>
+        <div class="stat"><b class="stat__n"><span class="sr-only">11</span><span aria-hidden="true" data-count="11">11</span></b><i class="stat__line"></i><span class="stat__lbl">Honors &amp; awards · research, STEM, writing, business</span></div>
+        <div class="stat"><b class="stat__n"><span class="sr-only">0.95</span><span aria-hidden="true" data-count="0.95" data-decimals="2">0.95</span></b><i class="stat__line"></i><span class="stat__lbl">F1 score · pancreatic‑cancer metastasis model</span></div>
         <div class="stat"><b class="stat__n"><span class="sr-only">130+</span><span aria-hidden="true" data-count="130" data-plus>130<b class="stat__plus">+</b></span></b><i class="stat__line"></i><span class="stat__lbl">Schools in the CodeSpark network · 8 countries</span></div>
-        <div class="stat"><b class="stat__n"><span class="sr-only">100+</span><span aria-hidden="true" data-count="100" data-plus>100<b class="stat__plus">+</b></span></b><i class="stat__line"></i><span class="stat__lbl">Volunteer tutoring hours · Schoolhouse.world</span></div>
-        <div class="stat"><b class="stat__n"><span class="sr-only">23,000+</span><span aria-hidden="true" data-count="23000" data-group data-plus>23,000<b class="stat__plus">+</b></span></b><i class="stat__line"></i><span class="stat__lbl">Entrants in Blue Ocean · placed top 250</span></div>
+        <div class="stat"><b class="stat__n"><span class="sr-only">100+</span><span aria-hidden="true" data-count="100" data-plus>100<b class="stat__plus">+</b></span></b><i class="stat__line"></i><span class="stat__lbl">Volunteer tutoring hours · Schoolhouse.<wbr>world</span></div>
         <div class="stat"><b class="stat__n"><span class="sr-only">20+</span><span aria-hidden="true" data-count="20" data-plus>20<b class="stat__plus">+</b></span></b><i class="stat__line"></i><span class="stat__lbl">Rockets built · Whaleworks</span></div>
       </div>
     </div>
@@ -305,7 +308,7 @@
     <div class="section__head">
       <p class="eyebrow"><i></i> Trajectory</p>
       <h2 class="section__title display" data-split-chars>Bangalore. Dubai. Frisco.</h2>
-      <p class="section__lede">The route and what I was doing at each stop. Six schools, three countries, a single thread.</p>
+      <p class="section__lede">The route, and what I was doing at each stop.</p>
     </div>
 
     <div class="rolodex" id="roloWrap">
@@ -315,11 +318,11 @@
           <header>
             <span class="chapter__tag">Chapter 01</span>
             <h3 class="chapter__city display">Bangalore</h3>
-            <p class="chapter__dates">— Feb 2016 · early primary</p>
+            <p class="chapter__dates">Until Feb 2016 · early primary</p>
           </header>
           <ul class="chapter__log">
             <li><b>Delhi Public School, Whitefield</b> — where school started.</li>
-            <li>Skipped nursery entirely. After the interview the chairman put me straight into LKG.</li>
+            <li>Placed directly into kindergarten (LKG) after an interview, skipping nursery.</li>
             <li>First move came mid‑year, to the UAE.</li>
           </ul>
         </article>
@@ -345,7 +348,7 @@
           </header>
           <ul class="chapter__log">
             <li><b>Fowler MS</b> → <b>Liberty HS</b> (Fall '23) → <b>Independence HS</b> (Spring '24 →).</li>
-            <li>Too young for 8th grade on paper. Second time a principal tested me in anyway.</li>
+            <li>Started 8th grade a year younger than my classmates.</li>
             <li>Where the research, internships, publications and competition work took shape.</li>
             <li><b>IEEE first author</b> · <b>Harvard Med research</b> · <b>USACO Gold</b> · <b>Microsoft AI Hackathon 1st</b> · <b>CodeSparkClubs co‑founder</b>.</li>
           </ul>
@@ -412,12 +415,147 @@
     </div>
   </section>
 
+  <!-- =================== EXPERIENCE (rack slide) =================== -->
+  <section class="experience" id="experience">
+    <div class="section__head">
+      <p class="eyebrow"><i></i> Experience</p>
+      <h2 class="section__title display" data-split-chars>Internships, applied.</h2>
+      <p class="section__lede">Five placements across medical research, enterprise cloud, fintech, dental AI, and semiconductors.</p>
+    </div>
+
+    <div class="rack">
+
+      <article class="role">
+        <header>
+          <span class="role__when">04/2026 — 08/2026 · 25 hrs/wk</span>
+          <h3 class="role__who display">Harvard Medical School</h3>
+          <p class="role__what">Research Intern · Dr. Fangxu Xing · non‑invasive cardiac hemodynamics</p>
+        </header>
+        <ul class="role__bullets">
+          <li>Dual‑PINO model coupling fluid–structure interaction for echocardiography analysis.</li>
+          <li>First‑author abstract submitted to SPIE Medical Imaging 2027.</li>
+        </ul>
+      </article>
+
+      <article class="role">
+        <header>
+          <span class="role__when">06/2025 — 08/2025 · 15 hrs/wk</span>
+          <h3 class="role__who display">Clari5 (A Perfios Company)</h3>
+          <p class="role__what">Research AI Intern · Financial Fraud Management</p>
+        </header>
+        <ul class="role__bullets">
+          <li>Researched how AI and ML are used in real‑time banking fraud detection and anomaly‑detection approaches.</li>
+          <li>Presented findings to senior teams on AI strategies for fraud‑risk reduction.</li>
+        </ul>
+      </article>
+
+      <article class="role">
+        <header>
+          <span class="role__when">06/2025 · 20 hrs/wk</span>
+          <h3 class="role__who display">SAP</h3>
+          <p class="role__what">AI Prototyping &amp; Software Engineering Intern · Cloud Lifecycle Management</p>
+        </header>
+        <ul class="role__bullets">
+          <li>Helped build a working prototype of SAP's Joule chatbot.</li>
+          <li>Shadowed the CLM Application Management team; learned enterprise AI integration end‑to‑end.</li>
+        </ul>
+      </article>
+
+      <article class="role">
+        <header>
+          <span class="role__when">12/2025 — 08/2026 · 4 hrs/wk</span>
+          <h3 class="role__who display">Ridgepoint Dental of Keller</h3>
+          <p class="role__what">AI / Machine Learning Intern</p>
+        </header>
+        <ul class="role__bullets">
+          <li>Built an AI assistant that automates dental radiograph analysis.</li>
+          <li>Tuned the model to give dentists fast, consistent second‑opinion insights at point‑of‑care.</li>
+        </ul>
+      </article>
+
+      <article class="role">
+        <header>
+          <span class="role__when">05/2026 — 08/2026 · 3 hrs/wk</span>
+          <h3 class="role__who display">Phytau Semiconductors</h3>
+          <p class="role__what">Analog &amp; Mixed‑Signal Engineering Intern</p>
+        </header>
+        <ul class="role__bullets">
+          <li>Built foundational knowledge in fractional‑N PLL design for high‑resolution frequency synthesis.</li>
+          <li>Investigated phase noise, fractional spurs, and quantization‑error trade‑offs through literature and design analysis.</li>
+        </ul>
+      </article>
+
+    </div>
+  </section>
+
+  <!-- =================== HONORS (fan deck) =================== -->
+  <section class="honors" id="honors">
+    <div class="section__head">
+      <p class="eyebrow"><i></i> Honors &amp; awards</p>
+      <h2 class="section__title display" data-split-chars>Across research, STEM, writing, and business.</h2>
+    </div>
+
+    <ol class="deck">
+      <li class="card"><span class="card__n">01</span>
+        <h3 class="card__t">IEEE ICSADL 2026 · 1st author publication</h3>
+        <p class="card__m">Peer‑reviewed · IEEE Xplore</p>
+        <p class="card__d">Review of AI and ML methods in aerospace engineering and systems.</p>
+      </li>
+      <li class="card"><span class="card__n">02</span>
+        <h3 class="card__t">Modeling the Future Challenge · Semi‑Finalist &amp; CRA Finalist (Top 8)</h3>
+        <p class="card__m">Mathematics · Climate Resilience Award</p>
+        <p class="card__d">ML model forecasting urban‑heat‑island severity; recognized as high‑potential climate tooling.</p>
+      </li>
+      <li class="card"><span class="card__n">03</span>
+        <h3 class="card__t">USACO Gold Division</h3>
+        <p class="card__m">Competitive programming</p>
+        <p class="card__d">Advanced to the Gold division — top ~10% nationwide.</p>
+      </li>
+      <li class="card"><span class="card__n">04</span>
+        <h3 class="card__t">IUrban Teen × Microsoft AI Hackathon · 1st Place</h3>
+        <p class="card__m">AI for Responsibility &amp; Inclusivity · Dallas 2026</p>
+        <p class="card__d">Algorithmic validation app scoring LLM output on a 0–100 confidence scale via academic retrieval.</p>
+      </li>
+      <li class="card"><span class="card__n">05</span>
+        <h3 class="card__t">Blue Ocean Entrepreneur Competition · Global Top 250</h3>
+        <p class="card__m">Of 23,000+ participants</p>
+        <p class="card__d">Business model built on disruptive innovation and market analysis, advanced to the final rounds of a global entrepreneurship competition.</p>
+      </li>
+      <li class="card"><span class="card__n">06</span>
+        <h3 class="card__t">Diamond Challenge · Global Semi‑Finalist</h3>
+        <p class="card__m">Entrepreneurship</p>
+        <p class="card__d">AI‑driven personalized financial‑literacy platform.</p>
+      </li>
+      <li class="card"><span class="card__n">07</span>
+        <h3 class="card__t">John Locke Essay Prize · Global Shortlist &amp; Commendation</h3>
+        <p class="card__m">Oxford · Princeton panel · 100,000+ entrants</p>
+        <p class="card__d">Commendations across two disciplines — macroeconomics of algorithmic pricing; ethics of politeness toward LLMs.</p>
+      </li>
+      <li class="card"><span class="card__n">08</span>
+        <h3 class="card__t">Immerse Education · 30% Scholarship Winner</h3>
+        <p class="card__m">Essay on ML fairness and bias mitigation</p>
+      </li>
+      <li class="card"><span class="card__n">09</span>
+        <h3 class="card__t">Horizon Academic Essay Prize · Honorable Mention</h3>
+        <p class="card__m">Surveillance · legal &amp; ethical analysis</p>
+      </li>
+      <li class="card"><span class="card__n">10</span>
+        <h3 class="card__t">National Rural &amp; Small Town Recognition</h3>
+        <p class="card__m">College Board National Recognition Program</p>
+      </li>
+      <li class="card"><span class="card__n">11</span>
+        <h3 class="card__t">AP Scholar with Distinction</h3>
+        <p class="card__m">Average ≥ 3.5 across all AP exams taken</p>
+      </li>
+    </ol>
+  </section>
+
   <!-- =================== SYSTEMS (circuit close) =================== -->
   <section class="systems" id="systems">
     <div class="section__head">
       <p class="eyebrow"><i></i> Systems</p>
       <h2 class="section__title display" data-split-chars>Markets in. Trade tickets out.</h2>
-      <p class="section__lede">SMG Signals is the quant system behind my DECA Stock Market Game team. It scans the whole US market, decides what to trade and how much to risk, and emails the team verified, ranked trade tickets five times every trading day.</p>
+      <p class="section__lede">SMG Signals is the quant system behind my DECA Stock Market Game team's simulated portfolio. It scans the whole US market, decides what to trade and how much to risk, and emails the team verified, ranked trade tickets five times every trading day.</p>
     </div>
 
     <article class="case">
@@ -472,7 +610,7 @@
         <div class="case__col" data-reveal>
           <h4 class="case__h">The four sleeves</h4>
           <ul class="case__list">
-            <li><b>Core momentum.</b> Ranks the market on 52‑week‑high proximity and volume surge, now optionally an ML ridge blend of five features.</li>
+            <li><b>Core momentum.</b> Ranks the market on 52‑week‑high proximity and volume surge, with an optional ML ridge blend of five features.</li>
             <li><b>Earnings.</b> Names with a history of big report reactions: buy the close before, sell the reaction day unless it breaks out.</li>
             <li><b>Fade.</b> Short a +60% first‑day blow‑off that's already fading, or the first red day after a parabolic run.</li>
             <li><b>Runner.</b> Day 1–2 of a +20% move: liquid, no recent dilution filing, never a SPAC.</li>
@@ -494,147 +632,12 @@
     </article>
   </section>
 
-  <!-- =================== EXPERIENCE (rack slide) =================== -->
-  <section class="experience" id="experience">
-    <div class="section__head">
-      <p class="eyebrow"><i></i> Experience</p>
-      <h2 class="section__title display" data-split-chars>Internships, applied.</h2>
-      <p class="section__lede">Five placements across medical research, enterprise cloud, fintech, dental AI, and semiconductors.</p>
-    </div>
-
-    <div class="rack">
-
-      <article class="role">
-        <header>
-          <span class="role__when">04/2026 — 08/2026 · 25 hrs/wk</span>
-          <h3 class="role__who display">Harvard Medical School</h3>
-          <p class="role__what">Research Intern · Dr. Fangxu Xing · non‑invasive cardiac hemodynamics</p>
-        </header>
-        <ul class="role__bullets">
-          <li>Dual‑PINO model coupling fluid–structure interaction for echocardiography analysis.</li>
-          <li>First‑author abstract submitted to SPIE Medical Imaging 2027.</li>
-        </ul>
-      </article>
-
-      <article class="role">
-        <header>
-          <span class="role__when">06/2025 — 08/2025 · 15 hrs/wk</span>
-          <h3 class="role__who display">Clari5 (A Perfios Company)</h3>
-          <p class="role__what">Research AI Intern · Financial Fraud Management</p>
-        </header>
-        <ul class="role__bullets">
-          <li>Analysed real‑time banking fraud detection pipelines and anomaly‑detection approaches.</li>
-          <li>Presented findings to senior teams on AI strategies for fraud‑risk reduction.</li>
-        </ul>
-      </article>
-
-      <article class="role">
-        <header>
-          <span class="role__when">06/2025 · 20 hrs/wk</span>
-          <h3 class="role__who display">SAP</h3>
-          <p class="role__what">AI Prototyping &amp; Software Engineering Intern · Cloud Lifecycle Management</p>
-        </header>
-        <ul class="role__bullets">
-          <li>Worked on a working prototype of the SAP Joule chatbot.</li>
-          <li>Shadowed the CLM Application Management team; learned enterprise AI integration end‑to‑end.</li>
-        </ul>
-      </article>
-
-      <article class="role">
-        <header>
-          <span class="role__when">12/2025 — 08/2026 · 4 hrs/wk</span>
-          <h3 class="role__who display">Ridgepoint Dental of Keller</h3>
-          <p class="role__what">AI / Machine Learning Intern</p>
-        </header>
-        <ul class="role__bullets">
-          <li>Built an AI assistant that automates dental radiograph analysis.</li>
-          <li>Tuned the model to give dentists fast, consistent second‑opinion insights at point‑of‑care.</li>
-        </ul>
-      </article>
-
-      <article class="role">
-        <header>
-          <span class="role__when">05/2026 — 08/2026 · 3 hrs/wk</span>
-          <h3 class="role__who display">Phytau Semiconductors</h3>
-          <p class="role__what">Analog &amp; Mixed‑Signal Engineering Intern</p>
-        </header>
-        <ul class="role__bullets">
-          <li>Built foundational knowledge in fractional‑N PLL design for high‑resolution frequency synthesis.</li>
-          <li>Investigated phase noise, fractional spurs, and quantization‑error trade‑offs through literature and design analysis.</li>
-        </ul>
-      </article>
-
-    </div>
-  </section>
-
-  <!-- =================== HONORS (fan deck) =================== -->
-  <section class="honors" id="honors">
-    <div class="section__head">
-      <p class="eyebrow"><i></i> Honors &amp; awards</p>
-      <h2 class="section__title display" data-split-chars>Across research, STEM, writing, and business.</h2>
-    </div>
-
-    <ol class="deck">
-      <li class="card"><span class="card__n">01</span>
-        <h3 class="card__t">IEEE ICSADL 2026 · 1st author publication</h3>
-        <p class="card__m">Peer‑reviewed · IEEE Xplore</p>
-        <p class="card__d">Review of AI and ML methods in aerospace engineering and systems.</p>
-      </li>
-      <li class="card"><span class="card__n">02</span>
-        <h3 class="card__t">Modeling the Future Challenge · Semi‑Finalist &amp; CRA Finalist (Top 8)</h3>
-        <p class="card__m">Mathematics · Climate Resilience Award</p>
-        <p class="card__d">ML model forecasting urban‑heat‑island severity; recognised as high‑potential climate tooling.</p>
-      </li>
-      <li class="card"><span class="card__n">03</span>
-        <h3 class="card__t">USACO Gold Division</h3>
-        <p class="card__m">Competitive programming</p>
-        <p class="card__d">Advanced to the Gold division — top ~10% nationwide.</p>
-      </li>
-      <li class="card"><span class="card__n">04</span>
-        <h3 class="card__t">IUrban Teen × Microsoft AI Hackathon · 1st Place</h3>
-        <p class="card__m">AI for Responsibility &amp; Inclusivity · Dallas 2026</p>
-        <p class="card__d">Algorithmic validation app scoring LLM output on a 0–100 confidence scale via academic retrieval.</p>
-      </li>
-      <li class="card"><span class="card__n">05</span>
-        <h3 class="card__t">Blue Ocean Entrepreneur Competition · Global Top 250</h3>
-        <p class="card__m">Of 23,000+ participants</p>
-        <p class="card__d">AI‑driven business model advanced to the final rounds of a global entrepreneurship competition.</p>
-      </li>
-      <li class="card"><span class="card__n">06</span>
-        <h3 class="card__t">Diamond Challenge · Global Semi‑Finalist</h3>
-        <p class="card__m">Entrepreneurship</p>
-        <p class="card__d">AI‑driven personalised financial literacy platform.</p>
-      </li>
-      <li class="card"><span class="card__n">07</span>
-        <h3 class="card__t">John Locke Essay Prize · Global Shortlist &amp; Commendation</h3>
-        <p class="card__m">Oxford · Princeton panel · 100,000+ entrants</p>
-        <p class="card__d">Commendations across two disciplines — macroeconomics of algorithmic pricing; ethics of politeness toward LLMs.</p>
-      </li>
-      <li class="card"><span class="card__n">08</span>
-        <h3 class="card__t">Immerse Education · 30% Scholarship Winner</h3>
-        <p class="card__m">Essay on ML fairness and bias mitigation</p>
-      </li>
-      <li class="card"><span class="card__n">09</span>
-        <h3 class="card__t">Horizon Academic Essay Prize · Honorable Mention</h3>
-        <p class="card__m">Surveillance · legal &amp; ethical analysis</p>
-      </li>
-      <li class="card"><span class="card__n">10</span>
-        <h3 class="card__t">National Rural &amp; Small Town Recognition</h3>
-        <p class="card__m">College Board National Recognition Program</p>
-      </li>
-      <li class="card"><span class="card__n">11</span>
-        <h3 class="card__t">AP Scholar with Distinction</h3>
-        <p class="card__m">Average ≥ 3.5 across all AP exams taken</p>
-      </li>
-    </ol>
-  </section>
-
   <!-- =================== VENTURES (aperture cards) =================== -->
   <section class="ventures" id="ventures">
     <div class="section__head">
       <p class="eyebrow"><i></i> Ventures &amp; leadership</p>
-      <h2 class="section__title display" data-split-chars>Organisations, platforms, teams.</h2>
-      <p class="section__lede">Hover any card.</p>
+      <h2 class="section__title display" data-split-chars>Organizations, platforms, teams.</h2>
+      <p class="section__lede">Founder and leader across education, climate, research and rocketry. Cards marked ↗ open a live site.</p>
     </div>
 
     <div class="modules">
@@ -645,7 +648,7 @@
             <span class="module__role">Co‑Founder</span>
             <h3 class="module__name display">CodeSparkClubs</h3>
             <p class="module__d">Free computer‑science club kits distributed to 130+ schools across 8 countries. Lesson plans, promo packs, officer workbook — the entire runway so a founder can launch in a week.</p>
-            <p class="module__meta">130+ schools · 2,700+ students · 8 countries</p>
+            <p class="module__meta">130+ schools · 2,700+ students · 8 countries · <span class="module__go">Visit site ↗</span></p>
           </div>
         </div>
         <div class="aperture__hover module__hover"></div>
@@ -657,13 +660,13 @@
             <span class="module__role">Founder</span>
             <h3 class="module__name display">ClimateIntel</h3>
             <p class="module__d">Nationwide AI climate‑intelligence platform. Google Earth Engine satellite telemetry → adaptive, climate‑zone‑aware stress indices → automated mitigation playbooks for urban planners.</p>
-            <p class="module__meta">Google Earth Engine · hyper‑local · policy automation</p>
+            <p class="module__meta">Google Earth Engine · hyper‑local · policy automation · <span class="module__go">Visit site ↗</span></p>
           </div>
         </div>
         <div class="aperture__hover module__hover"></div>
       </a>
 
-      <a class="module" href="https://ai-club-site.vercel.app/" target="_blank" rel="noopener" data-aperture-reveal>
+      <div class="module" data-aperture-reveal>
         <div class="aperture__base module__base" data-tint="cyan">
           <div class="module__content">
             <span class="module__role">Co‑Founder · Lead Content</span>
@@ -673,7 +676,7 @@
           </div>
         </div>
         <div class="aperture__hover module__hover"></div>
-      </a>
+      </div>
 
       <div class="module" data-aperture-reveal>
         <div class="aperture__base module__base" data-tint="ember">
@@ -704,7 +707,7 @@
           <div class="module__content">
             <span class="module__role">Founder</span>
             <h3 class="module__name display">Go Green, Act Smart</h3>
-            <p class="module__d">ML model that predicts individual monthly carbon emissions and returns personalised reduction plans.</p>
+            <p class="module__d">ML model that predicts individual monthly carbon emissions and returns personalized reduction plans.</p>
             <p class="module__meta">Personal‑emissions ML · recommendations</p>
           </div>
         </div>
@@ -718,7 +721,7 @@
   <section class="service" id="service">
     <div class="section__head">
       <p class="eyebrow"><i></i> Teaching &amp; service</p>
-      <h2 class="section__title display" data-split-chars>Hours against the clock.</h2>
+      <h2 class="section__title display" data-split-chars>Hours given back.</h2>
     </div>
     <div class="service__grid">
       <article class="svc" data-reveal>
@@ -789,7 +792,7 @@
           <li><a href="https://www.linkedin.com/in/armaangugnani/" target="_blank" rel="noopener">LinkedIn ↗</a></li>
         </ul>
         <dl class="contact__meta">
-          <div><dt>Location</dt><dd>Frisco, TX 75035</dd></div>
+          <div><dt>Location</dt><dd>Frisco, TX</dd></div>
           <div><dt>School</dt><dd>Independence HS · Class of 2027</dd></div>
         </dl>
       </div>
@@ -824,8 +827,8 @@
         <li><a href="#top">Home</a></li>
         <li><a href="#trajectory">Trajectory</a></li>
         <li><a href="#research">Research</a></li>
-        <li><a href="#systems">Systems</a></li>
         <li><a href="#experience">Experience</a></li>
+        <li><a href="#systems">Systems</a></li>
       </ul>
     </div>
     <div>
@@ -845,14 +848,14 @@
       </ul>
     </div>
   </div>
-  <p class="footer__fine">© 2026 Armaan Gugnani · Frisco, TX · built from scratch · <a href="lite.html">no‑animation version</a></p>
+  <p class="footer__fine">© 2026 Armaan Gugnani · Frisco, TX · built from scratch · <a href="lite.html">light version (no animation)</a></p>
 </footer>
 
 <script defer src="assets/vendor/gsap.min.js"></script>              <!-- GSAP 3.12.5 -->
 <script defer src="assets/vendor/ScrollTrigger.min.js"></script>     <!-- ScrollTrigger 3.12.5 -->
 <script defer src="assets/vendor/lenis.min.js"></script>             <!-- Lenis 1.1.13 -->
 <script defer src="assets/vendor/split-type.min.js"></script>        <!-- SplitType 0.3.4 -->
-<script defer src="assets/js/aperture-reveal.js?v=3"></script>
-<script defer src="assets/js/site.js?v=3"></script>
+<script defer src="assets/js/aperture-reveal.js?v=4"></script>
+<script defer src="assets/js/site.js?v=4"></script>
 </body>
 </html>
