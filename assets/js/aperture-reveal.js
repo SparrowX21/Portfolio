@@ -1,26 +1,35 @@
 /*!
- * ApertureReveal — cursor-driven mask that erodes a sealed cover layer
- * to expose a live layer underneath. Adapted from the CodeSpark RobotReveal
- * for the trajectory diagram (hero) and the venture cards.
+ * ApertureReveal — a cursor-driven circular mask on a layer.
  *
  * Markup contract:
- *   <div data-aperture-reveal>
- *     <div class="aperture__base"> …live content… </div>
- *     <div class="aperture__hover"> …sealed/matte cover… </div>
- *   </div>
+ *   <el data-aperture-reveal>
+ *     <… class="aperture__base"> …always-visible content… </…>
+ *     <… class="aperture__hover"> …masked layer… </…>
+ *   </el>
+ *
+ * Modes:
+ *   'erode'  — the hover layer is a cover; the aperture cuts a hole in it.
+ *              With sealed: true the cover is fully shown at rest.
+ *   'reveal' — the hover layer is a spotlight; it shows only inside the
+ *              aperture and is hidden at rest.
+ *
+ * Without JS the stylesheet's default mask hides the hover layer entirely,
+ * so the base content is always readable.
  */
 (function (root, factory) {
   if (typeof module === 'object' && module.exports) module.exports = factory();
   else {
     var api = factory();
     root.ApertureReveal = api.ApertureReveal;
-    root.initApertureReveals = api.initApertureReveals;
   }
 })(typeof self !== 'undefined' ? self : this, function () {
   'use strict';
 
   var REDUCED = typeof matchMedia === 'function' &&
     matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  var HIDDEN = 'radial-gradient(circle 0px at 50% 50%, #000 0%, transparent 100%)';
+  var SOLID = 'linear-gradient(#000, #000)';
 
   function ApertureReveal(el, options) {
     options = options || {};
@@ -29,6 +38,8 @@
     this.hoverLayer = el.querySelector('.aperture__hover');
     if (!this.hoverLayer) return;
 
+    this.mode = options.mode === 'reveal' ? 'reveal' : 'erode';
+    this.sealed = this.mode === 'erode' && !!options.sealed;
     this.radius = options.radius != null ? options.radius : 'auto';
     this.radiusRatio = options.radiusRatio != null ? options.radiusRatio : 0.32;
     this.maxRadius = options.maxRadius != null ? options.maxRadius : 300;
@@ -37,11 +48,14 @@
 
     this.target = { x: 0, y: 0, r: 0 };
     this.current = { x: 0, y: 0, r: 0 };
-    this.rect = null;
     this.raf = null;
     this.running = false;
     this.lastTime = 0;
     this.destroyed = false;
+
+    var s = this.hoverLayer.style;
+    s.webkitMaskSize = s.maskSize = '100% 100%';
+    s.webkitMaskRepeat = s.maskRepeat = 'no-repeat';
 
     this.onMove = this.onMove.bind(this);
     this.onLeave = this.onLeave.bind(this);
@@ -58,10 +72,11 @@
     this.render();
   }
 
+  // Layout size, not the on-screen rect: the element may be scaled by a
+  // transform, and the mask is drawn in its untransformed coordinate space.
   ApertureReveal.prototype.measure = function () {
-    this.rect = this.el.getBoundingClientRect();
     if (this.radius === 'auto') {
-      var base = Math.min(this.rect.width, this.rect.height) || 0;
+      var base = Math.min(this.el.offsetWidth, this.el.offsetHeight) || 0;
       this.resolvedRadius = Math.min(base * this.radiusRatio, this.maxRadius);
     } else {
       this.resolvedRadius = this.radius;
@@ -75,9 +90,11 @@
   };
 
   ApertureReveal.prototype.onMove = function (e) {
-    this.rect = this.el.getBoundingClientRect();
-    this.target.x = e.clientX - this.rect.left;
-    this.target.y = e.clientY - this.rect.top;
+    var rect = this.el.getBoundingClientRect();
+    var sx = rect.width ? this.el.offsetWidth / rect.width : 1;
+    var sy = rect.height ? this.el.offsetHeight / rect.height : 1;
+    this.target.x = (e.clientX - rect.left) * sx;
+    this.target.y = (e.clientY - rect.top) * sy;
     this.target.r = this.resolvedRadius;
     if (this.current.r === 0) {
       this.current.x = this.target.x;
@@ -100,21 +117,19 @@
 
   ApertureReveal.prototype.render = function () {
     var r = Math.max(this.current.r, 0);
-    var core = Math.round(this.core * 100);
-    var value = r <= 0.1
-      ? 'radial-gradient(circle 0px at 50% 50%, #000 0%, transparent 100%)'
-      : 'radial-gradient(circle ' + r.toFixed(1) + 'px at ' +
-        this.current.x.toFixed(1) + 'px ' + this.current.y.toFixed(1) + 'px, ' +
-        'transparent 0%, transparent ' + core + '%, #000 100%)';
-    // Note: we invert the mask relative to RobotReveal. The hover layer is a
-    // SEALED cover, so a transparent-core mask means the cursor erodes a hole
-    // in the cover and reveals the base. Elsewhere the hover was the image.
+    var value;
+    if (r <= 0.1) {
+      value = this.sealed ? SOLID : HIDDEN;
+    } else {
+      var core = Math.round(this.core * 100);
+      var at = 'circle ' + r.toFixed(1) + 'px at ' +
+        this.current.x.toFixed(1) + 'px ' + this.current.y.toFixed(1) + 'px, ';
+      value = this.mode === 'erode'
+        ? 'radial-gradient(' + at + 'transparent 0%, transparent ' + core + '%, #000 100%)'
+        : 'radial-gradient(' + at + '#000 0%, #000 ' + core + '%, transparent 100%)';
+    }
     this.hoverLayer.style.webkitMaskImage = value;
     this.hoverLayer.style.maskImage = value;
-    this.hoverLayer.style.webkitMaskSize = '100% 100%';
-    this.hoverLayer.style.maskSize = '100% 100%';
-    this.hoverLayer.style.webkitMaskRepeat = 'no-repeat';
-    this.hoverLayer.style.maskRepeat = 'no-repeat';
   };
 
   ApertureReveal.prototype.loop = function (time) {
@@ -145,14 +160,5 @@
     this.raf = requestAnimationFrame(this.loop);
   };
 
-  function initApertureReveals(selector, options) {
-    selector = selector || '[data-aperture-reveal]';
-    options = options || {};
-    var nodes = document.querySelectorAll(selector);
-    return Array.prototype.map.call(nodes, function (el) {
-      return new ApertureReveal(el, options);
-    });
-  }
-
-  return { ApertureReveal: ApertureReveal, initApertureReveals: initApertureReveals };
+  return { ApertureReveal: ApertureReveal };
 });

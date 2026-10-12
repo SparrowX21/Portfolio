@@ -15,9 +15,6 @@
 (function () {
   'use strict';
 
-  document.documentElement.classList.add('js');
-  document.documentElement.classList.remove('no-js');
-
   var REDUCED = matchMedia('(prefers-reduced-motion: reduce)').matches;
   var COARSE  = matchMedia('(pointer: coarse)').matches;
   var hasGSAP = typeof window.gsap !== 'undefined';
@@ -82,6 +79,9 @@
   function splitChars(el) {
     if (!hasSplit) return null;
     var s = new SplitType(el, { types: 'lines,words,chars' });
+    // Transformed chars are painted outside the parent's background-clip:text,
+    // so a gradient heading goes blank once split. .is-split swaps to a solid fill.
+    el.classList.add('is-split');
     s.lines.forEach(function (line) {
       line.style.overflow = 'hidden';
       line.style.display = 'block';
@@ -99,17 +99,22 @@
     '> handshake ok'
   ];
 
+  // done() runs as the iris starts to open, after the webfonts land, so the
+  // hero's entrance states are set while the boot screen still covers them.
   function coldBoot(done) {
     var boot = document.getElementById('boot');
-    if (!boot) { done(); return; }
-    if (REDUCED || !hasGSAP) { boot.remove(); done(); return; }
+    if (!boot || REDUCED || !hasGSAP) {
+      if (boot) boot.remove();
+      whenFontsReady(done);
+      return;
+    }
 
     var log = document.getElementById('bootLog');
     var count = document.getElementById('bootCount');
     var bar = document.getElementById('bootBar');
     var n = { v: 0 };
 
-    var tl = gsap.timeline({ onComplete: function () { boot.remove(); done(); } });
+    var tl = gsap.timeline({ onComplete: function () { boot.remove(); } });
 
     BOOT_LINES.forEach(function (line, i) {
       tl.call(function () {
@@ -122,7 +127,12 @@
       onUpdate: function () { count.textContent = String(Math.round(n.v)).padStart(3, '0'); }
     }, 0)
       .to(bar, { scaleX: 1, duration: 1.3, ease: 'power2.inOut' }, 0)
-      .to(boot, { clipPath: 'circle(0% at 50% 50%)', duration: 0.85, ease: 'power4.inOut' }, '+=0.1')
+      .addPause('+=0.1', function () {
+        whenFontsReady(function () {
+          try { done(); } finally { tl.resume(); }
+        });
+      })
+      .to(boot, { clipPath: 'circle(0% at 50% 50%)', duration: 0.85, ease: 'power4.inOut' })
       .to(boot, { opacity: 0, duration: 0.2 }, '-=0.2');
   }
 
@@ -274,8 +284,7 @@
 
   /* ---------- entrances & split chars ---------- */
   function entrances() {
-    if (!hasGSAP) return;
-    if (REDUCED) { gsap.set('[data-reveal]', { opacity: 1 }); return; }
+    if (!hasGSAP || REDUCED) return;
 
     gsap.utils.toArray('[data-reveal]').forEach(function (el) {
       gsap.fromTo(el,
@@ -350,25 +359,38 @@
 
   /* ---------- hero aperture (scroll pins + cursor steers) ---------- */
   function heroAperture() {
-    if (!hasAperture) return;
     var heroEl = document.getElementById('heroReveal');
     if (!heroEl) return;
 
-    var hero = new ApertureReveal(heroEl, {
-      radiusRatio: 0.36, maxRadius: 320, ease: 0.1, core: 0.56
-    });
-    if (!hero.hoverLayer) return;
-
-    if (COARSE) {
+    // Touch: dragging scrolls the page and the scroll pin is desktop-only, so
+    // there is no gesture that could open a sealed plate. Leave the map open.
+    if (!hasAperture || COARSE) {
       var tag = document.getElementById('heroHint');
-      if (tag) tag.innerHTML = '<b>▸</b> Drag across the plate';
+      if (tag) tag.innerHTML = '<b>▸</b> Bangalore → Dubai → Frisco';
+      return;
     }
 
-    if (REDUCED || !hasST) return;
+    var hero = new ApertureReveal(heroEl, {
+      mode: 'erode', sealed: true,
+      radiusRatio: 0.36, maxRadius: 320, ease: 0.1, core: 0.56
+    });
+    if (!hero.hoverLayer || REDUCED || !hasST) return;
 
+    // Scroll controls how far the plate opens; the cursor controls where.
     var hovering = false;
+    var scrollR = 0;
+    function settleToScroll() {
+      hero.target.x = heroEl.offsetWidth * 0.68;
+      hero.target.y = heroEl.offsetHeight * 0.5;
+      hero.target.r = scrollR;
+      hero.start();
+    }
     heroEl.addEventListener('pointerenter', function () { hovering = true; });
-    heroEl.addEventListener('pointerleave', function () { hovering = false; });
+    // Registered after ApertureReveal's own leave handler, so this wins.
+    heroEl.addEventListener('pointerleave', function () {
+      hovering = false;
+      if (scrollR > 0) settleToScroll();
+    });
 
     gsap.matchMedia().add('(min-width: 901px)', function () {
       var tl = gsap.timeline({
@@ -376,31 +398,33 @@
           trigger: '.hero', start: 'top top', end: '+=170%',
           pin: true, scrub: d(1), anticipatePin: 1,
           onUpdate: function (self) {
-            if (hovering) return;
-            var rect = heroEl.getBoundingClientRect();
-            hero.target.x = rect.width * 0.68;
-            hero.target.y = rect.height * 0.5;
-            hero.target.r = self.progress * Math.min(rect.width * 0.75, 460);
-            hero.start();
+            scrollR = self.progress * Math.min(heroEl.offsetWidth * 0.75, 460);
+            if (!hovering) settleToScroll();
           }
         }
       });
 
-      tl.to('.hero__figure', { scale: 1.08, yPercent: -3, ease: 'none' }, 0)
-        .to('.hero__word--back', { xPercent: -8, opacity: 0.55, ease: 'none' }, 0)
-        .to('.hero__word--front', { xPercent: 8, opacity: 0.55, ease: 'none' }, 0)
-        .to('.hero__foot, .hero__eyebrow', { opacity: 0.15, y: 16, ease: 'none' }, 0)
-        .to('.hero__hint', { opacity: 0, ease: 'none' }, 0);
+      // The entrance owns opacity and y on these elements; scroll uses filter,
+      // xPercent and yPercent so the two never write the same property.
+      tl.fromTo('.hero__figure', { scale: 1, yPercent: 0 }, { scale: 1.08, yPercent: -3, ease: 'none' }, 0)
+        .fromTo('.hero__word--back', { xPercent: 0, filter: 'brightness(1)' }, { xPercent: -8, filter: 'brightness(0.55)', ease: 'none' }, 0)
+        .fromTo('.hero__word--front', { xPercent: 0, filter: 'brightness(1)' }, { xPercent: 8, filter: 'brightness(0.55)', ease: 'none' }, 0)
+        .fromTo('.hero__foot, .hero__eyebrow', { y: 0, filter: 'opacity(1)' }, { y: 16, filter: 'opacity(0.15)', ease: 'none' }, 0)
+        .fromTo('.hero__hint', { filter: 'opacity(1)' }, { filter: 'opacity(0)', ease: 'none' }, 0);
 
-      return function () { tl.scrollTrigger && tl.scrollTrigger.kill(); tl.kill(); };
+      return function () {
+        scrollR = 0;
+        tl.scrollTrigger && tl.scrollTrigger.kill();
+        tl.kill();
+      };
     });
   }
 
-  /* ---------- venture cards (small-scale aperture) ---------- */
+  /* ---------- venture cards: a spotlight that follows the cursor ---------- */
   function moduleApertures() {
-    if (!hasAperture) return;
+    if (!hasAperture || COARSE) return;
     document.querySelectorAll('.module[data-aperture-reveal]').forEach(function (el) {
-      new ApertureReveal(el, { radiusRatio: 0.52, maxRadius: 240, ease: 0.11, core: 0.52 });
+      new ApertureReveal(el, { mode: 'reveal', radiusRatio: 0.5, maxRadius: 220, ease: 0.11, core: 0.3 });
     });
   }
 
@@ -428,11 +452,16 @@
 
     var chapters = track.querySelectorAll('.chapter');
     var pathfinderItems = document.querySelectorAll('.pathfinder li');
+    var LAST = chapters.length - 1;
 
-    function light(idx) {
+    function lightChapter(idx) {
       chapters.forEach(function (c, i) { c.classList.toggle('is-live', i === idx); });
+    }
+    // Outside the rolodex the pathfinder reads "you are here": Frisco.
+    function lightPath(idx) {
       pathfinderItems.forEach(function (p, i) { p.classList.toggle('is-live', i === idx); });
     }
+    function indexFor(p) { return Math.min(LAST, Math.floor(p * chapters.length)); }
 
     if (REDUCED || !hasST) {
       wrap.classList.add('is-stacked');
@@ -442,33 +471,49 @@
       return;
     }
 
-    gsap.matchMedia().add('(min-width: 801px)', function () {
+    // The three cards are 1936px wide at most. Past ~1735px there is too
+    // little horizontal travel to be worth a pin, so the row just sits still.
+    var mm = gsap.matchMedia();
+    mm.add('(min-width: 801px) and (max-width: 1735px)', function () {
+      function travel() { return Math.max(0, track.scrollWidth - document.documentElement.clientWidth); }
+      var st = null;
       var tween = gsap.to(track, {
-        x: function () { return -(track.scrollWidth - innerWidth); },
+        x: function () { return -travel(); },
         ease: 'none',
+        // Read off the rendered x, not the trigger: with scrub the track is
+        // still gliding after the last scroll event.
         onUpdate: function () {
-          var travel = track.scrollWidth - innerWidth;
+          var t = travel();
           var x = gsap.getProperty(track, 'x') || 0;
-          var progress = travel > 0 ? Math.min(Math.max(-x / travel, 0), 1) : 0;
-          var idx = Math.min(chapters.length - 1, Math.floor(progress * chapters.length));
-          light(idx);
+          var idx = indexFor(t > 0 ? Math.min(Math.max(-x / t, 0), 1) : 0);
+          lightChapter(idx);
+          lightPath(st && st.isActive ? idx : LAST);
         },
         scrollTrigger: {
           trigger: wrap, start: 'top top',
-          end: function () { return '+=' + ((track.scrollWidth - innerWidth) * 1.4 + innerHeight * 0.1); },
+          end: function () { return '+=' + (travel() * 1.4 + innerHeight * 0.1); },
           pin: true, scrub: d(1), anticipatePin: 1, invalidateOnRefresh: true,
-          onRefresh: function () { light(0); }
+          onToggle: function (self) { if (!self.isActive) lightPath(LAST); },
+          onRefresh: function (self) { lightChapter(indexFor(self.progress)); }
         }
       });
-      light(0);
+      st = tween.scrollTrigger;
+      lightChapter(0);
       return function () {
         chapters.forEach(function (c) { c.classList.remove('is-live'); });
+        lightPath(LAST);
         tween.scrollTrigger && tween.scrollTrigger.kill();
         tween.kill();
       };
     });
 
-    gsap.matchMedia().add('(max-width: 800px)', function () {
+    mm.add('(min-width: 1736px)', function () {
+      wrap.classList.add('is-static');
+      lightChapter(LAST);
+      return function () { wrap.classList.remove('is-static'); };
+    });
+
+    mm.add('(max-width: 800px)', function () {
       wrap.classList.add('is-stacked');
       track.style.flexDirection = 'column';
       track.style.height = 'auto';
@@ -488,7 +533,7 @@
     function q(sel) { return document.querySelector(sel); }
     function make(tag, cls, parent) { var el = document.createElement(tag); el.className = cls; parent.appendChild(el); return el; }
 
-    ['.marquee', '.manifesto', '.stats', '.trajectory', '.research',
+    ['.marquee', '.manifesto', '.stats', '.trajectory', '.research', '.systems',
      '.experience', '.honors', '.ventures', '.service', '.certs', '.contact', '.footer']
       .forEach(function (sel, i) {
         var host = q(sel); if (!host) return;
@@ -534,42 +579,44 @@
       });
     }
 
-    // Rack slide for experience
+    // Circuit close: research -> systems. The pipeline lights stage by stage
+    // as it scrolls through, the way a signal propagates along a wire.
+    var pipe = q('.pipe');
+    if (pipe) {
+      var stages = gsap.utils.toArray('.pipe__step');
+      var lightStages = function (p) {
+        var lit = p > 0 ? Math.ceil(p * stages.length) : 0;
+        stages.forEach(function (s, i) { s.classList.toggle('is-lit', i < lit); });
+      };
+      pipe.classList.add('pipe--armed');
+      ScrollTrigger.create({
+        trigger: pipe, start: 'top 82%', end: 'bottom 50%',
+        onUpdate: function (self) { lightStages(self.progress); },
+        onRefresh: function (self) { lightStages(self.progress); }
+      });
+    }
+
+    // Rack slide for experience. Units must match on both ends of a clip-path
+    // tween, or GSAP writes unitless values the browser rejects.
     var roles = gsap.utils.toArray('.role');
     if (roles.length) {
       roles.forEach(function (card, i) {
         var fromLeft = i % 2 === 0;
         gsap.fromTo(card,
           { xPercent: fromLeft ? -18 : 18, opacity: 0,
-            clipPath: fromLeft ? 'inset(0 0 0 100%)' : 'inset(0 100% 0 0)' },
-          { xPercent: 0, opacity: 1, clipPath: 'inset(0 0 0 0)',
+            clipPath: fromLeft ? 'inset(0% 0% 0% 100%)' : 'inset(0% 100% 0% 0%)' },
+          { xPercent: 0, opacity: 1, clipPath: 'inset(0% 0% 0% 0%)',
             duration: d(1.1), ease: 'power3.out',
             delay: (i % 2) * d(0.08),
             scrollTrigger: { trigger: card, start: 'top 90%' } });
       });
     }
 
-    // Research cards: iris cut
-    gsap.utils.toArray('.paper').forEach(function (p, i) {
-      gsap.from(p, {
-        y: 40, opacity: 0, duration: d(0.9), ease: 'power4.out',
-        delay: (i % 3) * d(0.08),
-        scrollTrigger: { trigger: p, start: 'top 88%' }
-      });
-    });
-
     // Modules: aperture cards appear with stagger
     gsap.from('.module', {
       scale: 0.92, opacity: 0, duration: d(0.95), ease: 'power3.out',
       stagger: d(0.08),
       scrollTrigger: { trigger: '.modules', start: 'top 85%' }
-    });
-
-    // Service + certs: gentle rise
-    gsap.from('.svc, .cert', {
-      y: 30, opacity: 0, duration: d(0.8), ease: 'power3.out',
-      stagger: d(0.06),
-      scrollTrigger: { trigger: '.service, .certs', start: 'top 85%' }
     });
 
     // Contact title column shear
@@ -598,10 +645,12 @@
   function ambient() {
     if (!hasGSAP || REDUCED) return;
 
-    // idle respiration on the hero plate
-    var plate = document.getElementById('heroReveal');
-    if (plate && !COARSE) {
-      gsap.to(plate, { y: -9, duration: d(2.6), ease: 'sine.inOut', repeat: -1, yoyo: true });
+    // Idle respiration. It moves the plate's layers, not the plate, because
+    // the entrance and the scroll pin both transform the plate itself.
+    if (!COARSE) {
+      gsap.to('#heroReveal > .aperture__base, #heroReveal > .aperture__hover', {
+        y: -7, duration: d(2.6), ease: 'sine.inOut', repeat: -1, yoyo: true
+      });
     }
     // halo pulse under the live node
     gsap.to('.trajectory__halo', { opacity: 0.5, duration: d(2.2), ease: 'sine.inOut', repeat: -1, yoyo: true });
@@ -635,14 +684,12 @@
         (f.get('notes') || '')
       ].join('\n');
 
-      if (status) status.textContent = 'Opening your mail app…';
+      // A mailto: link can't report whether a mail app actually opened, so
+      // the status gives the direct address instead of claiming success.
+      if (status) status.textContent = 'Opening your mail app… If nothing opens, email armaan.gugnani.work@gmail.com.';
       window.location.href = 'mailto:armaan.gugnani.work@gmail.com' +
         '?subject=' + encodeURIComponent('[armaangugnani.com] ' + (f.get('topic') || 'Note')) +
         '&body=' + encodeURIComponent(body);
-
-      setTimeout(function () {
-        if (status) { status.textContent = 'Mail draft opened. Send to finish.'; status.classList.add('is-ok'); }
-      }, 400);
     });
   }
 
@@ -673,11 +720,10 @@
     bar.querySelector('.lite-offer__no').addEventListener('click', function () { close('full'); });
   }
 
+  // ?full=1 and a saved 'lite' choice are handled by the inline head script,
+  // before first paint; by the time this runs, stored() reflects both.
   function autoLite() {
     if (REDUCED || stored()) return;
-    // ?full=1 permanently opts out; useful on hosts where measured FPS lies
-    // (CI browsers, screenshotters, remote-rendering panes).
-    if (location.search.indexOf('full=1') !== -1) { remember('full'); return; }
     var SETTLE = 2200, WINDOW = 4000, BAD_MS = 40, MIN = 3;
 
     setTimeout(function () {
@@ -724,15 +770,17 @@
     safe('liteOffer', liteOffer);
     safe('autoLite', autoLite);
 
-    // hero entrance choreography
+    // Hero entrance. Owns opacity, scale, letter-spacing, y on the figure and
+    // yPercent on the eyebrow/foot; the scroll pin uses different properties.
     if (hasGSAP && !REDUCED) {
       var tl = gsap.timeline({ defaults: { ease: 'power4.out' } });
-      tl.from('.hero__figure', { clipPath: 'inset(0 0 100% 0)', yPercent: 6,
-            duration: d(1.15), ease: 'power4.inOut' }, 0)
+      tl.fromTo('.hero__figure',
+          { clipPath: 'inset(0% 0% 100% 0%)', y: 30 },
+          { clipPath: 'inset(0% 0% 0% 0%)', y: 0, duration: d(1.15), ease: 'power4.inOut', clearProps: 'clipPath' }, 0)
         .from('.hero__word', { scale: 1.12, opacity: 0, letterSpacing: '0.05em',
             duration: d(1.1), stagger: d(0.06) }, 0.18)
-        .from('.hero__eyebrow', { opacity: 0, y: 14, duration: d(0.6) }, 0.3)
-        .from('.hero__foot',    { opacity: 0, y: 22, duration: d(0.8) }, 0.42)
+        .from('.hero__eyebrow', { opacity: 0, yPercent: 60, duration: d(0.6) }, 0.3)
+        .from('.hero__foot',    { opacity: 0, yPercent: 6, duration: d(0.8) }, 0.42)
         .from('.hero__hint',    { opacity: 0, duration: d(0.5) }, 0.95);
     }
 
@@ -751,7 +799,7 @@
     } else { go(); }
   }
 
-  function boot() { coldBoot(function () { whenFontsReady(start); }); }
+  function boot() { coldBoot(start); }
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
   else boot();

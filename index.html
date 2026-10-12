@@ -6,6 +6,17 @@
 <title>Armaan Gugnani — AI research, systems, and a trajectory across three continents</title>
 <meta name="description" content="High school senior working at the intersection of AI, data, and mathematics. IEEE first author, Harvard Medical School research intern, USACO Gold, Microsoft AI Hackathon first place. Bangalore to Dubai to Frisco.">
 <meta name="theme-color" content="#070809">
+<script>
+  // Runs before first paint: mark JS as available, and honour a saved
+  // view choice (?full=1 opts in to the animated site for good).
+  (function (d) {
+    d.documentElement.className = 'js';
+    try {
+      if (/[?&]full=1/.test(location.search)) localStorage.setItem('ag-view', 'full');
+      else if (localStorage.getItem('ag-view') === 'lite') location.replace('lite.html');
+    } catch (e) {}
+  })(document);
+</script>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -60,6 +71,7 @@
   <nav class="nav__links" aria-label="Primary">
     <a href="#trajectory">Trajectory</a>
     <a href="#research">Research</a>
+    <a href="#systems">Systems</a>
     <a href="#experience">Experience</a>
     <a href="#honors">Honors</a>
     <a href="#ventures">Ventures</a>
@@ -74,14 +86,14 @@
   <section class="hero" id="hero">
     <div class="hero__stage" id="heroStage">
 
-      <p class="hero__eyebrow" data-reveal>
+      <p class="hero__eyebrow">
         <i></i> Independence High School · Frisco, TX · Class of 2027
       </p>
 
       <h1 class="hero__wordmark display">
         <span class="hero__word hero__word--back">Armaan</span>
         <!-- The aperture figure sits BETWEEN the two words. Scroll opens it, cursor steers it. -->
-        <div class="hero__figure" id="heroReveal" data-aperture-reveal>
+        <span class="hero__figure" id="heroReveal" data-aperture-reveal>
           <!-- base layer: the live trajectory diagram -->
           <svg class="aperture__base" viewBox="0 0 1200 700" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
             <defs>
@@ -161,7 +173,7 @@
           </svg>
 
           <!-- hover layer: matte sealed plate the aperture erodes -->
-          <div class="aperture__hover" aria-hidden="true">
+          <span class="aperture__hover" aria-hidden="true">
             <svg viewBox="0 0 1200 700" preserveAspectRatio="xMidYMid slice">
               <defs>
                 <linearGradient id="plate" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -181,8 +193,8 @@
                 <text x="600" y="396" text-anchor="middle" font-size="10" letter-spacing="4">MOVE · CURSOR · TO · OPEN</text>
               </g>
             </svg>
-          </div>
-        </div>
+          </span>
+        </span>
         <span class="hero__word hero__word--front">Gugnani</span>
       </h1>
 
@@ -216,6 +228,7 @@
       <span class="marquee__item">Machine Learning Research</span><span class="marquee__dot">◆</span>
       <span class="marquee__item">USACO Gold</span><span class="marquee__dot">◆</span>
       <span class="marquee__item">IEEE First Author</span><span class="marquee__dot">◆</span>
+      <span class="marquee__item">Autonomous Quant Systems</span><span class="marquee__dot">◆</span>
       <span class="marquee__item">Harvard Medical School</span><span class="marquee__dot">◆</span>
       <span class="marquee__item">Microsoft AI Hackathon · 1st</span><span class="marquee__dot">◆</span>
       <span class="marquee__item">John Locke Shortlist</span><span class="marquee__dot">◆</span>
@@ -241,12 +254,12 @@
     <div class="section__inner stats__inner">
       <p class="eyebrow"><i></i> By the numbers</p>
       <div class="stats__grid">
-        <div class="stat"><b class="stat__n" data-count="1560">0</b><i class="stat__line"></i><span class="stat__lbl">SAT · out of 1600</span></div>
-        <div class="stat"><b class="stat__n" data-count="29">0</b><span class="stat__sub">of 395</span><i class="stat__line"></i><span class="stat__lbl">Class rank · IHS</span></div>
-        <div class="stat"><b class="stat__n" data-count="130" data-plus>0</b><i class="stat__line"></i><span class="stat__lbl">Schools in the CodeSpark network · 8 countries</span></div>
-        <div class="stat"><b class="stat__n" data-count="100" data-plus>0</b><i class="stat__line"></i><span class="stat__lbl">Volunteer tutoring hours · Schoolhouse.world</span></div>
-        <div class="stat"><b class="stat__n" data-count="23000" data-group data-plus>0</b><i class="stat__line"></i><span class="stat__lbl">Entrants in Blue Ocean · placed top 250</span></div>
-        <div class="stat"><b class="stat__n" data-count="20" data-plus>0</b><i class="stat__line"></i><span class="stat__lbl">Rockets built · Whaleworks</span></div>
+        <div class="stat"><b class="stat__n" data-count="1560">1560</b><i class="stat__line"></i><span class="stat__lbl">SAT · out of 1600</span></div>
+        <div class="stat"><b class="stat__n" data-count="29">29</b><span class="stat__sub">of 395</span><i class="stat__line"></i><span class="stat__lbl">Class rank · IHS</span></div>
+        <div class="stat"><b class="stat__n" data-count="130" data-plus>130<b class="stat__plus">+</b></b><i class="stat__line"></i><span class="stat__lbl">Schools in the CodeSpark network · 8 countries</span></div>
+        <div class="stat"><b class="stat__n" data-count="100" data-plus>100<b class="stat__plus">+</b></b><i class="stat__line"></i><span class="stat__lbl">Volunteer tutoring hours · Schoolhouse.world</span></div>
+        <div class="stat"><b class="stat__n" data-count="23000" data-group data-plus>23,000<b class="stat__plus">+</b></b><i class="stat__line"></i><span class="stat__lbl">Entrants in Blue Ocean · placed top 250</span></div>
+        <div class="stat"><b class="stat__n" data-count="20" data-plus>20<b class="stat__plus">+</b></b><i class="stat__line"></i><span class="stat__lbl">Rockets built · Whaleworks</span></div>
       </div>
     </div>
   </section>
@@ -363,6 +376,88 @@
     </div>
   </section>
 
+  <!-- =================== SYSTEMS (circuit close) =================== -->
+  <section class="systems" id="systems">
+    <div class="section__head">
+      <p class="eyebrow"><i></i> Systems</p>
+      <h2 class="section__title display" data-split-chars>Markets in. Trade tickets out.</h2>
+      <p class="section__lede">SMG Signals is the quant system behind my DECA Stock Market Game team. It scans the whole US market, decides what to trade and how much to risk, and emails the team verified, ranked trade tickets five times every trading day.</p>
+    </div>
+
+    <article class="case">
+      <header class="case__head">
+        <div class="case__id">
+          <span class="case__tag">DECA Stock Market Game · 2026 · built for a 3‑person team</span>
+          <h3 class="case__title display">SMG Signals</h3>
+        </div>
+        <dl class="case__stats">
+          <div><dt>Universe</dt><dd>~2,900</dd><span>US names scanned daily</span></div>
+          <div><dt>Signals</dt><dd>4</dd><span>independent sleeves</span></div>
+          <div><dt>Runs</dt><dd>5×</dd><span>per trading day</span></div>
+          <div><dt>Agents</dt><dd>7</dd><span>scheduled cloud agents</span></div>
+          <div><dt>Tests</dt><dd>95</dd><span>unit tests</span></div>
+        </dl>
+      </header>
+
+      <ol class="pipe" aria-label="How a run flows">
+        <li class="pipe__step">
+          <span class="pipe__n">01 · Data</span>
+          <h4>Universe</h4>
+          <p>Nasdaq screener, ~2,900 names at $3+ and $5M+ daily volume. Split‑adjusted history, earnings calendar, SEC filings. SPACs and leveraged ETFs excluded.</p>
+        </li>
+        <li class="pipe__step">
+          <span class="pipe__n">02 · Signals</span>
+          <h4>Four sleeves</h4>
+          <p>Core momentum, earnings reactions, fade shorts, and day‑1–2 runners, plus the top industries by 10‑day relative strength.</p>
+        </li>
+        <li class="pipe__step">
+          <span class="pipe__n">03 · Sizing</span>
+          <h4>Goal mode</h4>
+          <p>Picks the day's risk level (steady, spec or hot) that maximizes the odds of hitting the team's equity goal by the deadline.</p>
+        </li>
+        <li class="pipe__step">
+          <span class="pipe__n">04 · Risk</span>
+          <h4>Capital rules</h4>
+          <p>Buying power packed in priority order, hard stops, exposure caps, gap‑down and no‑chase guards, Monte Carlo sizing.</p>
+        </li>
+        <li class="pipe__step">
+          <span class="pipe__n">05 · Run</span>
+          <h4>GitHub Actions</h4>
+          <p>The model runs five times a trading day, and on every change to the book, committing fresh signals.</p>
+        </li>
+        <li class="pipe__step">
+          <span class="pipe__n">06 · Verify</span>
+          <h4>Agents → team</h4>
+          <p>Seven cloud agents re‑check every ticket against live quotes, news and SEC filings, then email ranked, reasoned tickets with sources.</p>
+        </li>
+      </ol>
+
+      <div class="case__body">
+        <div class="case__col" data-reveal>
+          <h4 class="case__h">The four sleeves</h4>
+          <ul class="case__list">
+            <li><b>Core momentum.</b> Ranks the market on 52‑week‑high proximity and volume surge, now optionally an ML ridge blend of five features.</li>
+            <li><b>Earnings.</b> Names with a history of big report reactions: buy the close before, sell the reaction day unless it breaks out.</li>
+            <li><b>Fade.</b> Short a +60% first‑day blow‑off that's already fading, or the first red day after a parabolic run.</li>
+            <li><b>Runner.</b> Day 1–2 of a +20% move: liquid, no recent dilution filing, never a SPAC.</li>
+          </ul>
+        </div>
+        <div class="case__col" data-reveal>
+          <h4 class="case__h">Sizing · goal mode</h4>
+          <p>Every day it computes the closed‑form probability of reaching the equity goal by the deadline, then picks the risk level that maximizes it. Stickiness and a lock‑at‑goal rule keep it from thrashing, and per‑level μ and σ come from a two‑year backtest.</p>
+          <p class="case__formula" aria-label="P equals Phi of n mu minus the log of G over x, all over sigma root n">P = Φ( (n·μ − ln(G/x)) / (σ√n) )</p>
+          <h4 class="case__h">Risk</h4>
+          <p>Hard −12% stops that never loosen, 10‑day‑low exits, pyramid adds, profit locks, and a fat‑tailed, correlated Monte Carlo that models short‑squeeze convexity.</p>
+        </div>
+        <div class="case__col case__col--note" data-reveal>
+          <h4 class="case__h">What the research found</h4>
+          <p>The obvious edge was fake. Momentum "runners" looked profitable until survivorship bias and reverse‑split errors in the data were corrected, and then they turned negative. The strongest edge in a two‑year event study was the opposite trade: fading parabolic blow‑offs.</p>
+          <p class="case__meta">2‑year backtest harness · IC, top‑k and quintile evaluation · 331 strategy variants tested · adversarial model‑critic agent</p>
+        </div>
+      </div>
+    </article>
+  </section>
+
   <!-- =================== EXPERIENCE (rack slide) =================== -->
   <section class="experience" id="experience">
     <div class="section__head">
@@ -373,7 +468,7 @@
 
     <div class="rack">
 
-      <article class="role" data-reveal>
+      <article class="role">
         <header>
           <span class="role__when">04/2026 — 08/2026 · 25 hrs/wk</span>
           <h3 class="role__who display">Harvard Medical School</h3>
@@ -385,7 +480,7 @@
         </ul>
       </article>
 
-      <article class="role" data-reveal>
+      <article class="role">
         <header>
           <span class="role__when">06/2025 — 08/2025 · 15 hrs/wk</span>
           <h3 class="role__who display">Clari5 (A Perfios Company)</h3>
@@ -397,7 +492,7 @@
         </ul>
       </article>
 
-      <article class="role" data-reveal>
+      <article class="role">
         <header>
           <span class="role__when">06/2025 · 20 hrs/wk</span>
           <h3 class="role__who display">SAP</h3>
@@ -409,7 +504,7 @@
         </ul>
       </article>
 
-      <article class="role" data-reveal>
+      <article class="role">
         <header>
           <span class="role__when">12/2025 — 08/2026 · 4 hrs/wk</span>
           <h3 class="role__who display">Ridgepoint Dental of Keller</h3>
@@ -421,7 +516,7 @@
         </ul>
       </article>
 
-      <article class="role" data-reveal>
+      <article class="role">
         <header>
           <span class="role__when">05/2026 — 08/2026 · 3 hrs/wk</span>
           <h3 class="role__who display">Phytau Semiconductors</h3>
@@ -663,7 +758,7 @@
         </dl>
       </div>
 
-      <form class="contact__form" id="requestForm" novalidate>
+      <form class="contact__form" id="requestForm" action="mailto:armaan.gugnani.work@gmail.com" method="post" enctype="text/plain">
         <h3 class="display">Send a note</h3>
         <label>Name<input type="text" name="name" required></label>
         <label>Email<input type="email" name="email" required></label>
@@ -678,7 +773,7 @@
         </label>
         <label>Message<textarea name="notes" rows="4" required></textarea></label>
         <button type="submit" data-magnetic><span>Send</span></button>
-        <p class="contact__status" id="formStatus" role="status">Opens in your mail app.</p>
+        <p class="contact__status" id="formStatus" role="status">Opens a draft in your mail app.</p>
       </form>
     </div>
   </section>
@@ -693,6 +788,7 @@
         <li><a href="#top">Home</a></li>
         <li><a href="#trajectory">Trajectory</a></li>
         <li><a href="#research">Research</a></li>
+        <li><a href="#systems">Systems</a></li>
         <li><a href="#experience">Experience</a></li>
       </ul>
     </div>
@@ -716,11 +812,11 @@
   <p class="footer__fine">© 2026 Armaan Gugnani · Frisco, TX · built from scratch · <a href="lite.html">no‑animation version</a></p>
 </footer>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/lenis@1.1.13/dist/lenis.min.js"></script>
-<script src="https://unpkg.com/split-type@0.3.4/umd/index.min.js"></script>
-<script src="assets/js/aperture-reveal.js"></script>
-<script src="assets/js/site.js"></script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/lenis@1.1.13/dist/lenis.min.js"></script>
+<script defer src="https://unpkg.com/split-type@0.3.4/umd/index.min.js"></script>
+<script defer src="assets/js/aperture-reveal.js"></script>
+<script defer src="assets/js/site.js"></script>
 </body>
 </html>

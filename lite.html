@@ -21,10 +21,17 @@
   ul { padding-left: 1.2rem; }
   .meta { font-size: 0.9rem; color: #9ba1a9; margin: 0 0 2rem; }
   .back { display: inline-block; margin-top: 2.4rem; font-size: 0.9rem; }
+  .notice { padding: 0.8rem 1rem; border: 1px solid #2c3034; border-left: 3px solid #7fe9ff; border-radius: 8px; background: #121416; font-size: 0.92rem; margin: 0 0 1.6rem; }
+  .notice[hidden] { display: none; }
   .chip { display: inline-block; padding: 0.2rem 0.6rem; border: 1px solid #2c3034; border-radius: 999px; font-size: 0.8rem; margin: 0.2rem; color: #9ba1a9; }
 </style>
 </head>
 <body>
+
+<p class="notice" id="autoNotice" hidden>You're on the light version because animations were running slowly on this device. <a href="./?full=1">Switch to the full site</a>.</p>
+<script>
+  if (/[?&]auto=1/.test(location.search)) document.getElementById('autoNotice').hidden = false;
+</script>
 
 <h1>Armaan Gugnani</h1>
 <p class="meta">Independence HS · Frisco, TX · Class of 2027 · <a href="mailto:armaan.gugnani.work@gmail.com">armaan.gugnani.work@gmail.com</a> · <a href="https://www.linkedin.com/in/armaangugnani/" target="_blank" rel="noopener">LinkedIn ↗</a></p>
@@ -42,6 +49,11 @@
 
 <h3>Pancreatic Cancer Metastasis Prediction</h3>
 <p>Lead developer on a five-model ML study; F1 0.95 on liver metastasis prediction.</p>
+
+<h2>Systems</h2>
+<h3>SMG Signals — quant system for my DECA Stock Market Game team (2026)</h3>
+<p>Scans ~2,900 US stocks daily, generates signals from four sleeves (core momentum with an optional ML ridge blend, earnings reactions, fade shorts on parabolic blow-offs, day-1–2 runners), sizes risk by picking the daily level that maximizes the probability of hitting the team's equity goal, and applies hard stops, buying-power rules and a Monte Carlo risk layer. It runs on GitHub Actions five times per trading day; seven scheduled cloud agents re-verify each ticket against live quotes, news and SEC filings, then email the team ranked, reasoned trade tickets.</p>
+<p>Research finding: momentum "runners" looked profitable until survivorship bias and reverse-split errors were corrected; the strongest edge in a two-year event study was fading parabolic blow-offs. 95 unit tests, 2-year backtest harness, 331 strategy variants tested.</p>
 
 <h2>Experience</h2>
 <h3>Harvard Medical School · Research Intern (2026)</h3>
