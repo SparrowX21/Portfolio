@@ -18,17 +18,20 @@
   })(document);
 </script>
 
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;700;800;900&family=Instrument+Sans:ital,wght@0,400..600;1,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<!-- Everything is first-party: fonts and libraries are self-hosted, so a slow or
+     blocked CDN can never hold the page. Bump ?v= on deploys that change CSS/JS. -->
+<link rel="preload" href="assets/fonts/bigshouldersdisplay-fC1_PZJEZG-e9gHhdI4-NBbfd2ys3SjJCx1czNDu.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="assets/fonts/instrumentsans-pxiTypc9vsFDm051Uf6KVwgkfoSxQ0GsQv8ToedPibnr0SZe1Q.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="assets/fonts/jetbrainsmono-tDbv2o-flEEny0FZhsfKu5WU4zr3E_BX0PnT8RD8yKwBNntkaToggR7BYRbKPxDcwg.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="assets/css/fonts.css?v=3">
 
-<link rel="stylesheet" href="assets/css/site.css">
+<link rel="stylesheet" href="assets/css/site.css?v=3">
 
 <meta property="og:title" content="Armaan Gugnani — AI research, systems, and a trajectory across three countries">
 <meta property="og:description" content="IEEE first author, Harvard Medical School research intern, USACO Gold, first place at the IUrban Teen × Microsoft AI Hackathon. Bangalore to Dubai to Frisco.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://armaangugnani.com/">
-<meta property="og:image" content="https://armaangugnani.com/assets/og-image.png">
+<meta property="og:image" content="https://armaangugnani.com/assets/og-image.jpg">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
 <meta property="og:image:alt" content="Armaan Gugnani — AI, research, systems. A trajectory from Bangalore to Dubai to Frisco.">
@@ -42,7 +45,7 @@
   "@type": "Person",
   "name": "Armaan Gugnani",
   "url": "https://armaangugnani.com/",
-  "image": "https://armaangugnani.com/assets/og-image.png",
+  "image": "https://armaangugnani.com/assets/og-image.jpg",
   "sameAs": ["https://www.linkedin.com/in/armaangugnani/"],
   "affiliation": {
     "@type": "HighSchool",
@@ -845,11 +848,11 @@
   <p class="footer__fine">© 2026 Armaan Gugnani · Frisco, TX · built from scratch · <a href="lite.html">no‑animation version</a></p>
 </footer>
 
-<script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
-<script defer src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
-<script defer src="https://cdn.jsdelivr.net/npm/lenis@1.1.13/dist/lenis.min.js"></script>
-<script defer src="https://unpkg.com/split-type@0.3.4/umd/index.min.js"></script>
-<script defer src="assets/js/aperture-reveal.js"></script>
-<script defer src="assets/js/site.js"></script>
+<script defer src="assets/vendor/gsap.min.js"></script>              <!-- GSAP 3.12.5 -->
+<script defer src="assets/vendor/ScrollTrigger.min.js"></script>     <!-- ScrollTrigger 3.12.5 -->
+<script defer src="assets/vendor/lenis.min.js"></script>             <!-- Lenis 1.1.13 -->
+<script defer src="assets/vendor/split-type.min.js"></script>        <!-- SplitType 0.3.4 -->
+<script defer src="assets/js/aperture-reveal.js?v=3"></script>
+<script defer src="assets/js/site.js?v=3"></script>
 </body>
 </html>

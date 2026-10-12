@@ -5,10 +5,15 @@ Personal site for Armaan Gugnani — AI research, systems, and a trajectory acro
 ## Stack
 
 - Hand-written static HTML + CSS + vanilla JS.
-- GSAP + ScrollTrigger · Lenis smooth scroll · SplitType for text splitting.
+- GSAP 3.12.5 + ScrollTrigger · Lenis 1.1.13 · SplitType 0.3.4, self-hosted in `assets/vendor/`.
+- Fonts (Big Shoulders Display, Instrument Sans, JetBrains Mono) self-hosted in `assets/fonts/` via `assets/css/fonts.css`. No third-party requests at runtime.
 - One custom library: `assets/js/aperture-reveal.js` — cursor-driven mask that erodes a sealed cover layer to expose the live layer underneath.
 - No frameworks, no bundler, no build step. Open `index.html` directly.
-- `lite.html` is a fallback with no JS, auto-switched to on measured low frame rate (see `autoLite` in `assets/js/site.js`).
+- `lite.html` is a fallback with no JS. Slow devices are *offered* it (hardware hints or measured frame rate, see `autoLite` in `assets/js/site.js`); only an explicit click is remembered.
+
+## Deploying changes
+
+GitHub Pages caches files for 10 minutes and ignores query strings, so first-party CSS/JS are referenced as `?v=N` in `index.html`. **Bump that number whenever `site.css`, `fonts.css`, `site.js` or `aperture-reveal.js` changes**, otherwise returning visitors can get new HTML with old JS.
 
 ## Layout
 

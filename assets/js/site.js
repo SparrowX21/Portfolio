@@ -100,17 +100,21 @@
     return new SplitType(vis, { types: types, tagName: 'span' });
   }
 
+  // No line wrappers: SplitType freezes line breaks at the width it measured,
+  // so a resize or rotation left headings broken mid-phrase. Each word is its
+  // own clipping box instead; chars still rise from behind a mask, and words
+  // re-flow freely at any width.
   function splitChars(el) {
-    var s = accessibleSplit(el, 'lines,words,chars');
+    var s = accessibleSplit(el, 'words,chars');
     if (!s) return null;
     // Transformed chars are painted outside the parent's background-clip:text,
     // so a gradient heading goes blank once split. .is-split swaps to a solid fill.
     el.classList.add('is-split');
-    s.lines.forEach(function (line) {
-      line.style.overflow = 'clip';
-      line.style.display = 'block';
-      line.style.paddingBottom = '0.06em';
-      line.classList.add('split-line');
+    s.words.forEach(function (w) {
+      w.style.overflow = 'hidden';
+      w.style.overflow = 'clip';          // ignored where unsupported
+      w.style.verticalAlign = 'top';      // clipped inline-blocks lose their text baseline
+      w.style.paddingBottom = '0.06em';
     });
     return s;
   }
@@ -121,8 +125,26 @@
      when the visitor scrolls, and pausing it would strand pinned sections. */
   var motionPaused = false;
   var loops = [];
-  function loop(tween) { loops.push(tween); if (motionPaused) tween.pause(); return tween; }
   var onMotionChange = [];
+  // Each loop also pauses while its host section is off-screen.
+  var io = typeof IntersectionObserver === 'function'
+    ? new IntersectionObserver(function (entries) {
+        entries.forEach(function (e) { e.target.__inView = e.isIntersecting; });
+        syncLoops();
+      })
+    : null;
+  function inView(host) { return !host || host.__inView !== false; }
+  function syncLoops() {
+    loops.forEach(function (l) {
+      if (!motionPaused && inView(l.host)) l.tween.resume(); else l.tween.pause();
+    });
+  }
+  function loop(tween, host) {
+    if (host && io && !host.__watched) { host.__watched = true; io.observe(host); }
+    loops.push({ tween: tween, host: host || null });
+    syncLoops();
+    return tween;
+  }
 
   /* ---------- cold boot ---------- */
   var BOOT_LINES = [
@@ -147,20 +169,29 @@
     var bar = document.getElementById('bootBar');
     var n = { v: 0 };
 
+    // The self-test plays once per browser session. Reloads, back-navigation
+    // and returns from lite.html go straight to the iris.
+    var seen = false;
+    try { seen = sessionStorage.getItem('ag-booted') === '1'; sessionStorage.setItem('ag-booted', '1'); } catch (e) {}
+
     var tl = gsap.timeline({ onComplete: function () { boot.remove(); } });
 
-    BOOT_LINES.forEach(function (line, i) {
-      tl.call(function () {
-        log.innerHTML += (i ? '<br>' : '') + line.replace(/\[(.+?)\]/, '<b>[$1]</b>');
-      }, null, i * 0.26);
-    });
+    if (!seen) {
+      BOOT_LINES.forEach(function (line, i) {
+        tl.call(function () {
+          log.innerHTML += (i ? '<br>' : '') + line.replace(/\[(.+?)\]/, '<b>[$1]</b>');
+        }, null, i * 0.2);
+      });
+      tl.to(n, {
+        v: 100, duration: 0.95, ease: 'power2.inOut',
+        onUpdate: function () { count.textContent = String(Math.round(n.v)).padStart(3, '0'); }
+      }, 0)
+        .to(bar, { scaleX: 1, duration: 0.95, ease: 'power2.inOut' }, 0);
+    } else {
+      gsap.set(boot.querySelector('.boot__inner'), { opacity: 0 });
+    }
 
-    tl.to(n, {
-      v: 100, duration: 1.3, ease: 'power2.inOut',
-      onUpdate: function () { count.textContent = String(Math.round(n.v)).padStart(3, '0'); }
-    }, 0)
-      .to(bar, { scaleX: 1, duration: 1.3, ease: 'power2.inOut' }, 0)
-      .addPause('+=0.1', function () {
+    tl.addPause(seen ? 0.01 : '+=0.1', function () {
         whenFontsReady(function () {
           try { done(); } finally { tl.resume(); }
         });
@@ -191,23 +222,23 @@
     var ctx = cv.getContext('2d');
     if (!ctx) return;
 
-    var dpr = Math.min(devicePixelRatio || 1, 2);
+    // A 1x backing store: hairline dots and links look the same as at 2x, with
+    // a quarter of the pixels to clear and composite on every frame.
     var nodes = [];
-    // clientWidth, not innerWidth: on phones innerWidth can exceed the layout
-    // width, and a canvas sized to it widens the page into sideways scroll.
     var W = 0, H = 0;
     var COUNT = document.documentElement.clientWidth < 760 ? 24 : 48;
     var LINK  = document.documentElement.clientWidth < 760 ? 130 : 170;
-    var raf = null;
+    var raf = null, last = 0;
 
     function size() {
+      // clientWidth, not innerWidth: on phones innerWidth can exceed the layout
+      // width, and a canvas sized to it widens the page into sideways scroll.
       W = document.documentElement.clientWidth;
       H = innerHeight;
-      cv.width = W * dpr;
-      cv.height = H * dpr;
+      cv.width = W;
+      cv.height = H;
       cv.style.width = '100%';
       cv.style.height = '100%';
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     }
 
     function seed() {
@@ -259,17 +290,39 @@
           ctx.stroke();
         }
       }
-      // Paused: the frame above is drawn once as a still, then the loop parks.
-      raf = motionPaused ? null : requestAnimationFrame(draw);
     }
 
-    size(); seed(); draw();
-    addEventListener('resize', function () { size(); seed(); if (!raf) draw(); }, { passive: true });
-    document.addEventListener('visibilitychange', function () {
-      if (document.hidden) { cancelAnimationFrame(raf); raf = null; }
-      else if (!raf) draw();
-    });
-    onMotionChange.push(function () { if (!motionPaused && !raf) draw(); });
+    // A slow drift needs ~30fps; scrolling gets every frame so the field can
+    // stretch with the shared velocity. Paused or hidden: the loop parks.
+    function frame(now) {
+      raf = null;
+      if (motionPaused || document.hidden) return;
+      if (Math.abs(vel) < 0.05 && now - last < 32) { raf = requestAnimationFrame(frame); return; }
+      last = now;
+      draw();
+      raf = requestAnimationFrame(frame);
+    }
+    function wake() {
+      if (!raf && !motionPaused && !document.hidden) raf = requestAnimationFrame(frame);
+    }
+
+    size(); seed(); draw(); wake();
+
+    // Mobile toolbars fire resize as they slide in and out. Debounce, and rescale
+    // the existing nodes instead of re-rolling them, so the field never jumps.
+    var rt = null;
+    addEventListener('resize', function () {
+      clearTimeout(rt);
+      rt = setTimeout(function () {
+        var oldW = W || 1, oldH = H || 1;
+        size();
+        nodes.forEach(function (n) { n.x *= W / oldW; n.y *= H / oldH; });
+        draw();
+      }, 150);
+    }, { passive: true });
+    document.addEventListener('visibilitychange', wake);
+    // Pausing draws one still frame (boost is 0) so the field doesn't vanish.
+    onMotionChange.push(function () { draw(); wake(); });
   }
 
   /* ---------- aperture cursor ---------- */
@@ -290,10 +343,15 @@
       dot.classList.add('is-live');
     }, { passive: true });
     document.documentElement.addEventListener('mouseleave', function () { dot.classList.remove('is-live'); });
+    gsap.set(dot, { xPercent: -50, yPercent: -50 });
+    var setX = gsap.quickSetter(dot, 'x', 'px');
+    var setY = gsap.quickSetter(dot, 'y', 'px');
     gsap.ticker.add(function () {
-      p.x += (t.x - p.x) * 0.13;
-      p.y += (t.y - p.y) * 0.13;
-      gsap.set(dot, { x: p.x, y: p.y });
+      var dx = t.x - p.x, dy = t.y - p.y;
+      if (Math.abs(dx) < 0.1 && Math.abs(dy) < 0.1) return;
+      p.x += dx * 0.13;
+      p.y += dy * 0.13;
+      setX(p.x); setY(p.y);
     });
 
     document.querySelectorAll('a, button, input, select, textarea').forEach(function (el) {
@@ -310,17 +368,15 @@
   function magnetics() {
     if (REDUCED || COARSE || !hasGSAP) return;
     document.querySelectorAll('[data-magnetic]').forEach(function (el) {
+      var qx = gsap.quickTo(el, 'x', { duration: 0.5, ease: 'power3.out' });
+      var qy = gsap.quickTo(el, 'y', { duration: 0.5, ease: 'power3.out' });
       el.addEventListener('mousemove', function (e) {
         var r = el.getBoundingClientRect();
-        gsap.to(el, {
-          x: (e.clientX - r.left - r.width / 2) * 0.28,
-          y: (e.clientY - r.top - r.height / 2) * 0.4,
-          duration: 0.5, ease: 'power3.out'
-        });
+        qx((e.clientX - r.left - r.width / 2) * 0.28);
+        qy((e.clientY - r.top - r.height / 2) * 0.4);
       });
-      el.addEventListener('mouseleave', function () {
-        gsap.to(el, { x: 0, y: 0, duration: 0.7, ease: 'power4.out' });
-      });
+      // precise return, no bounce
+      el.addEventListener('mouseleave', function () { qx(0); qy(0); });
     });
   }
 
@@ -400,7 +456,7 @@
     var track = document.getElementById('marquee');
     if (!track || !hasGSAP || REDUCED) return;
     track.innerHTML += track.innerHTML;
-    loop(gsap.to(track, { xPercent: -50, duration: d(26), ease: 'none', repeat: -1 }));
+    loop(gsap.to(track, { xPercent: -50, duration: d(26), ease: 'none', repeat: -1 }), track.closest('.marquee'));
   }
 
   /* ---------- hero aperture (scroll pins + cursor steers) ---------- */
@@ -456,11 +512,13 @@
         }
       });
 
-      // The entrance owns opacity and y on these elements; scroll uses filter,
-      // xPercent and yPercent so the two never write the same property.
+      // The entrance owns the words' opacity/scale and the plate's y; scroll
+      // writes xPercent, yPercent, the <h1>'s opacity and filter on the small
+      // blocks, so the two never write the same property.
       tl.fromTo('.hero__figure', { scale: 1, yPercent: 0 }, { scale: 1.08, yPercent: -3, ease: 'none' }, 0)
-        .fromTo('.hero__word--back', { xPercent: 0, filter: 'brightness(1)' }, { xPercent: -8, filter: 'brightness(0.55)', ease: 'none' }, 0)
-        .fromTo('.hero__word--front', { xPercent: 0, filter: 'brightness(1)' }, { xPercent: 8, filter: 'brightness(0.55)', ease: 'none' }, 0)
+        .fromTo('.hero__word--back', { xPercent: 0 }, { xPercent: -8, ease: 'none' }, 0)
+        .fromTo('.hero__word--front', { xPercent: 0 }, { xPercent: 8, ease: 'none' }, 0)
+        .fromTo('.hero__wordmark', { opacity: 1 }, { opacity: 0.55, ease: 'none' }, 0)
         .fromTo('.hero__foot, .hero__eyebrow', { y: 0, filter: 'opacity(1)' }, { y: 16, filter: 'opacity(0.15)', ease: 'none' }, 0)
         .fromTo('.hero__hint', { filter: 'opacity(1)' }, { filter: 'opacity(0)', ease: 'none' }, 0);
 
@@ -489,8 +547,10 @@
     path.style.opacity = 0.9;
 
     var off = 0;
+    var hero = document.getElementById('hero');
+    if (hero && io && !hero.__watched) { hero.__watched = true; io.observe(hero); }
     gsap.ticker.add(function () {
-      if (motionPaused) return;
+      if (motionPaused || !inView(hero)) return;
       off += 2 + Math.abs(vel) * 0.6;
       if (off > len) off -= len;
       path.style.strokeDashoffset = (len - off).toFixed(1);
@@ -700,17 +760,18 @@
 
     // Idle respiration. It moves the plate's layers, not the plate, because
     // the entrance and the scroll pin both transform the plate itself.
+    var hero = document.getElementById('hero');
     if (!COARSE) {
       loop(gsap.to('#heroReveal > .aperture__base, #heroReveal > .aperture__hover', {
         y: -7, duration: d(2.6), ease: 'sine.inOut', repeat: -1, yoyo: true
-      }));
+      }), hero);
     }
     // halo pulse under the live node
-    loop(gsap.to('.trajectory__halo', { opacity: 0.5, duration: d(2.2), ease: 'sine.inOut', repeat: -1, yoyo: true }));
+    loop(gsap.to('.trajectory__halo', { opacity: 0.5, duration: d(2.2), ease: 'sine.inOut', repeat: -1, yoyo: true }), hero);
     // node pulsing on the live DFW node
     loop(gsap.to('.trajectory__node--live circle:nth-child(2)', {
       r: 28, opacity: 0.3, duration: d(1.6), ease: 'sine.inOut', repeat: -1, yoyo: true
-    }));
+    }), hero);
   }
 
   /* ---------- pause-motion toggle (WCAG 2.2.2) ---------- */
@@ -722,7 +783,7 @@
 
     function apply(paused, save) {
       motionPaused = paused;
-      loops.forEach(function (t) { if (paused) t.pause(); else t.resume(); });
+      syncLoops();
       onMotionChange.forEach(function (fn) { fn(); });
       btn.setAttribute('aria-pressed', paused ? 'true' : 'false');
       if (label) label.textContent = paused ? 'Play motion' : 'Pause motion';
@@ -773,20 +834,22 @@
   function stored() { try { return localStorage.getItem('ag-view'); } catch (e) { return 'unknown'; } }
   function remember(v) { try { localStorage.setItem('ag-view', v); } catch (e) {} }
 
-  function liteOffer() {
-    if (stored()) return;
-    var cores = navigator.hardwareConcurrency;
-    var mem = navigator.deviceMemory;
-    var save = navigator.connection && navigator.connection.saveData;
-    var weak = (typeof cores === 'number' && cores <= 4) ||
-               (typeof mem === 'number' && mem <= 4) || save === true;
-    if (!weak) return;
+  // One offer bar per session at most. Only a click is remembered: a slow
+  // moment is never turned into a permanent redirect behind the visitor's back.
+  var offered = false;
+  function offerLite(message) {
+    if (offered || stored()) return;
+    try {
+      if (sessionStorage.getItem('ag-lite-offered')) return;
+      sessionStorage.setItem('ag-lite-offered', '1');
+    } catch (e) {}
+    offered = true;
 
     var bar = document.createElement('div');
     bar.className = 'lite-offer';
     bar.setAttribute('role', 'status');
     bar.innerHTML =
-      '<span>Lots of animation on this page. There is a lighter version.</span>' +
+      '<span>' + message + '</span>' +
       '<a class="lite-offer__go" href="lite.html">Use lite</a>' +
       '<button class="lite-offer__no" type="button">No thanks</button>';
     document.body.insertBefore(bar, document.body.firstChild);
@@ -796,12 +859,23 @@
     bar.querySelector('.lite-offer__no').addEventListener('click', function () { close('full'); });
   }
 
-  // ?full=1 and a saved 'lite' choice are handled by the inline head script,
-  // before first paint; by the time this runs, stored() reflects both.
+  // Hardware hints are only a proxy, so they earn an offer, never a decision.
+  function liteOffer() {
+    var cores = navigator.hardwareConcurrency;
+    var mem = navigator.deviceMemory;
+    var save = navigator.connection && navigator.connection.saveData;
+    var weak = (typeof cores === 'number' && cores <= 4) ||
+               (typeof mem === 'number' && mem <= 4) || save === true;
+    if (weak) offerLite('Lots of animation on this page. There is a lighter version.');
+  }
+
+  // Measured frame rate. Frames during a scroll are skipped: the hero pin is
+  // the heaviest moment by design, and power-saving modes cap rAF at 30fps.
+  // ?full=1 and a saved choice are handled by the inline head script.
   function autoLite() {
     if (REDUCED || stored()) return;
     if (navigator.webdriver || /bot|crawl|spider|slurp|lighthouse|headless|pagespeed/i.test(navigator.userAgent)) return;
-    var SETTLE = 2200, WINDOW = 4000, BAD_MS = 40, MIN = 3;
+    var SETTLE = 2200, WINDOW = 4000, BAD_MS = 40, MIN = 20;
 
     setTimeout(function () {
       if (document.visibilityState !== 'visible') return;
@@ -811,17 +885,14 @@
 
       function tick(now) {
         if (abort) { document.removeEventListener('visibilitychange', hide); return; }
-        samples.push(now - last); last = now;
+        if (Math.abs(vel) < 0.5) samples.push(now - last);
+        last = now;
         if (now < until) { requestAnimationFrame(tick); return; }
         document.removeEventListener('visibilitychange', hide);
-        if (samples.length < MIN) {
-          if (!samples.length) return;
-          remember('lite'); location.replace('lite.html?auto=1'); return;
-        }
+        if (samples.length < MIN) return;      // mostly scrolling: no verdict
         samples.sort(function (a, b) { return a - b; });
         var med = samples[Math.floor(samples.length / 2)];
-        if (med <= BAD_MS) return;
-        remember('lite'); location.replace('lite.html?auto=1');
+        if (med > BAD_MS) offerLite('Animations look slow on this device. The light version has the same content.');
       }
       requestAnimationFrame(tick);
     }, SETTLE);
@@ -829,14 +900,16 @@
 
   /* ---------- boot ---------- */
   function start() {
+    // Pins first. ScrollTrigger refreshes triggers in creation order, so any
+    // trigger created before a pin ignores that pin's spacer and fires early.
+    safe('heroAperture', heroAperture);
+    safe('rolodex', rolodex);
     safe('entrances', entrances);
     safe('wordIgnite', wordIgnite);
     safe('counters', counters);
     safe('marquee', marquee);
-    safe('heroAperture', heroAperture);
     safe('moduleApertures', moduleApertures);
     safe('trajectoryPulse', trajectoryPulse);
-    safe('rolodex', rolodex);
     safe('sectionTransitions', sectionTransitions);
     safe('sparkField', sparkField);
     safe('cursor', apertureCursor);
@@ -848,14 +921,14 @@
     safe('liteOffer', liteOffer);
     safe('autoLite', autoLite);
 
-    // Hero entrance. Owns opacity, scale, letter-spacing, y on the figure and
+    // Hero entrance. Owns the words' opacity and scale, y on the plate, and
     // yPercent on the eyebrow/foot; the scroll pin uses different properties.
     if (hasGSAP && !REDUCED) {
       var tl = gsap.timeline({ defaults: { ease: 'power4.out' } });
       tl.fromTo('.hero__figure',
           { clipPath: 'inset(0% 0% 100% 0%)', y: 30 },
           { clipPath: 'inset(0% 0% 0% 0%)', y: 0, duration: d(1.15), ease: 'power4.inOut', clearProps: 'clipPath' }, 0)
-        .from('.hero__word', { scale: 1.12, opacity: 0, letterSpacing: '0.05em',
+        .from('.hero__word', { scale: 1.12, opacity: 0,
             duration: d(1.1), stagger: d(0.06) }, 0.18)
         .from('.hero__eyebrow', { opacity: 0, yPercent: 60, duration: d(0.6) }, 0.3)
         .from('.hero__foot',    { opacity: 0, yPercent: 6, duration: d(0.8) }, 0.42)
@@ -865,7 +938,6 @@
     if (hasST) {
       if (document.fonts && document.fonts.ready)
         document.fonts.ready.then(function () { ScrollTrigger.refresh(); });
-      addEventListener('load', function () { ScrollTrigger.refresh(); });
     }
   }
 
