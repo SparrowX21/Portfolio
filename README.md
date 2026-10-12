@@ -1,6 +1,6 @@
 # armaangugnani.com
 
-Personal site for Armaan Gugnani — AI research, systems, and a trajectory across three continents.
+Personal site for Armaan Gugnani — AI research, systems, and a trajectory across three countries.
 
 ## Stack
 

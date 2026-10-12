@@ -60,7 +60,8 @@
     }, { passive: true });
   }
 
-  /* anchor links routed through lenis */
+  /* in-page links: smooth scroll, then hand focus to the target so the next
+     Tab (and the screen-reader cursor) continues from there, not the nav */
   safe('anchors', function () {
     document.querySelectorAll('a[href^="#"]').forEach(function (a) {
       a.addEventListener('click', function (e) {
@@ -69,27 +70,59 @@
         var target = document.querySelector(id);
         if (!target) return;
         e.preventDefault();
-        if (lenis) lenis.scrollTo(target, { offset: -70 });
-        else target.scrollIntoView({ behavior: REDUCED ? 'auto' : 'smooth' });
+        if (history.pushState) history.pushState(null, '', id);
+        function land() {
+          if (!target.hasAttribute('tabindex')) target.setAttribute('tabindex', '-1');
+          target.focus({ preventScroll: true });
+        }
+        if (lenis) lenis.scrollTo(target, { offset: -70, onComplete: land });
+        else { target.scrollIntoView({ behavior: REDUCED ? 'auto' : 'smooth' }); land(); }
       });
     });
   });
 
   /* ---------- helpers ---------- */
-  function splitChars(el) {
+
+  // SplitType wraps every word/char in its own element, which some screen
+  // readers announce letter by letter. Keep one readable copy for assistive
+  // tech and split an aria-hidden visual copy instead.
+  function accessibleSplit(el, types) {
     if (!hasSplit) return null;
-    var s = new SplitType(el, { types: 'lines,words,chars' });
+    var sr = document.createElement('span');
+    sr.className = 'sr-only';
+    sr.textContent = el.textContent.replace(/\s+/g, ' ').trim();
+    var vis = document.createElement('span');
+    vis.className = 'split-vis';
+    vis.setAttribute('aria-hidden', 'true');
+    while (el.firstChild) vis.appendChild(el.firstChild);
+    el.appendChild(sr);
+    el.appendChild(vis);
+    return new SplitType(vis, { types: types, tagName: 'span' });
+  }
+
+  function splitChars(el) {
+    var s = accessibleSplit(el, 'lines,words,chars');
+    if (!s) return null;
     // Transformed chars are painted outside the parent's background-clip:text,
     // so a gradient heading goes blank once split. .is-split swaps to a solid fill.
     el.classList.add('is-split');
     s.lines.forEach(function (line) {
-      line.style.overflow = 'hidden';
+      line.style.overflow = 'clip';
       line.style.display = 'block';
       line.style.paddingBottom = '0.06em';
       line.classList.add('split-line');
     });
     return s;
   }
+
+  /* ---------- motion control ----------
+     Endless loops (marquee, breathing plate, pulses, particle field) can be
+     paused from the nav. Scroll-driven animation is left alone: it only moves
+     when the visitor scrolls, and pausing it would strand pinned sections. */
+  var motionPaused = false;
+  var loops = [];
+  function loop(tween) { loops.push(tween); if (motionPaused) tween.pause(); return tween; }
+  var onMotionChange = [];
 
   /* ---------- cold boot ---------- */
   var BOOT_LINES = [
@@ -198,7 +231,7 @@
 
     function draw() {
       ctx.clearRect(0, 0, W, H);
-      var boost = 1 + Math.min(Math.abs(vel) * 0.11, 5);
+      var boost = motionPaused ? 0 : 1 + Math.min(Math.abs(vel) * 0.11, 5);
       for (var i = 0; i < nodes.length; i++) {
         var n = nodes[i];
         n.x += n.vx * boost; n.y += n.vy * boost;
@@ -226,15 +259,17 @@
           ctx.stroke();
         }
       }
-      raf = requestAnimationFrame(draw);
+      // Paused: the frame above is drawn once as a still, then the loop parks.
+      raf = motionPaused ? null : requestAnimationFrame(draw);
     }
 
     size(); seed(); draw();
-    addEventListener('resize', function () { size(); seed(); }, { passive: true });
+    addEventListener('resize', function () { size(); seed(); if (!raf) draw(); }, { passive: true });
     document.addEventListener('visibilitychange', function () {
       if (document.hidden) { cancelAnimationFrame(raf); raf = null; }
       else if (!raf) draw();
     });
+    onMotionChange.push(function () { if (!motionPaused && !raf) draw(); });
   }
 
   /* ---------- aperture cursor ---------- */
@@ -243,11 +278,18 @@
     if (!dot) return;
     if (REDUCED || COARSE || !hasGSAP) { dot.remove(); return; }
 
-    dot.classList.add('is-live');
+    // Shown only once a mouse is actually in use, so keyboard-only visitors
+    // never get a ring parked over the middle of the page.
     var t = { x: innerWidth / 2, y: innerHeight / 2 };
     var p = { x: t.x, y: t.y };
+    var seen = false;
 
-    addEventListener('mousemove', function (e) { t.x = e.clientX; t.y = e.clientY; }, { passive: true });
+    addEventListener('mousemove', function (e) {
+      t.x = e.clientX; t.y = e.clientY;
+      if (!seen) { seen = true; p.x = t.x; p.y = t.y; }
+      dot.classList.add('is-live');
+    }, { passive: true });
+    document.documentElement.addEventListener('mouseleave', function () { dot.classList.remove('is-live'); });
     gsap.ticker.add(function () {
       p.x += (t.x - p.x) * 0.13;
       p.y += (t.y - p.y) * 0.13;
@@ -309,7 +351,8 @@
   function wordIgnite() {
     var el = document.getElementById('manifesto');
     if (!el || !hasSplit || !hasST || REDUCED) return;
-    var s = new SplitType(el, { types: 'words' });
+    var s = accessibleSplit(el, 'words');
+    if (!s) return;
     s.words.forEach(function (w) { w.classList.add('w'); });
     gsap.to(s.words, {
       color: '#eef0f3', ease: 'none', stagger: d(0.4),
@@ -324,8 +367,11 @@
       var end = parseFloat(el.getAttribute('data-count'));
       var group = el.hasAttribute('data-group');
       var plus = el.hasAttribute('data-plus');
-      var line = el.parentNode.querySelector('.stat__line');
+      var stat = el.closest('.stat');
+      var line = stat && stat.querySelector('.stat__line');
 
+      // The element animated here is aria-hidden; a sibling .sr-only span
+      // always holds the real number, and the HTML ships with it too.
       function write(v) {
         var n = Math.round(v);
         var body = group ? n.toLocaleString('en-US') : String(n);
@@ -336,11 +382,11 @@
         write(end); if (line) gsap.set(line, { scaleX: 1 }); return;
       }
 
-      write(0);
       var o = { v: 0 };
       ScrollTrigger.create({
         trigger: el, start: 'top 88%', once: true,
         onEnter: function () {
+          write(0);
           gsap.to(o, { v: end, duration: d(1.5), ease: 'power2.out',
             onUpdate: function () { write(o.v); } });
           if (line) gsap.to(line, { scaleX: 1, duration: d(1.1), ease: 'power3.inOut' });
@@ -354,7 +400,7 @@
     var track = document.getElementById('marquee');
     if (!track || !hasGSAP || REDUCED) return;
     track.innerHTML += track.innerHTML;
-    gsap.to(track, { xPercent: -50, duration: d(26), ease: 'none', repeat: -1 });
+    loop(gsap.to(track, { xPercent: -50, duration: d(26), ease: 'none', repeat: -1 }));
   }
 
   /* ---------- hero aperture (scroll pins + cursor steers) ---------- */
@@ -362,11 +408,14 @@
     var heroEl = document.getElementById('heroReveal');
     if (!heroEl) return;
 
-    // Touch: dragging scrolls the page and the scroll pin is desktop-only, so
-    // there is no gesture that could open a sealed plate. Leave the map open.
-    if (!hasAperture || COARSE) {
-      var tag = document.getElementById('heroHint');
-      if (tag) tag.innerHTML = '<b>▸</b> Bangalore → Dubai → Frisco';
+    var tag = document.getElementById('heroHint');
+    function hint(text) { if (tag) tag.innerHTML = '<b>▸</b> ' + text; }
+
+    // Seal the plate only where something can open it. Touch: dragging scrolls
+    // the page. Reduced motion or no ScrollTrigger: there is no scroll pin.
+    // In those cases the map is simply left open.
+    if (!hasAperture || COARSE || REDUCED || !hasST) {
+      hint('Bangalore → Dubai → Frisco');
       return;
     }
 
@@ -374,7 +423,9 @@
       mode: 'erode', sealed: true,
       radiusRatio: 0.36, maxRadius: 320, ease: 0.1, core: 0.56
     });
-    if (!hero.hoverLayer || REDUCED || !hasST) return;
+    if (!hero.hoverLayer) return;
+    // Below 901px there is no pin, so only the cursor opens the plate.
+    gsap.matchMedia().add('(max-width: 900px)', function () { hint('Move over the plate to open it'); });
 
     // Scroll controls how far the plate opens; the cursor controls where.
     var hovering = false;
@@ -393,6 +444,7 @@
     });
 
     gsap.matchMedia().add('(min-width: 901px)', function () {
+      hint('Scroll to open · move to look');
       var tl = gsap.timeline({
         scrollTrigger: {
           trigger: '.hero', start: 'top top', end: '+=170%',
@@ -438,6 +490,7 @@
 
     var off = 0;
     gsap.ticker.add(function () {
+      if (motionPaused) return;
       off += 2 + Math.abs(vel) * 0.6;
       if (off > len) off -= len;
       path.style.strokeDashoffset = (len - off).toFixed(1);
@@ -648,16 +701,39 @@
     // Idle respiration. It moves the plate's layers, not the plate, because
     // the entrance and the scroll pin both transform the plate itself.
     if (!COARSE) {
-      gsap.to('#heroReveal > .aperture__base, #heroReveal > .aperture__hover', {
+      loop(gsap.to('#heroReveal > .aperture__base, #heroReveal > .aperture__hover', {
         y: -7, duration: d(2.6), ease: 'sine.inOut', repeat: -1, yoyo: true
-      });
+      }));
     }
     // halo pulse under the live node
-    gsap.to('.trajectory__halo', { opacity: 0.5, duration: d(2.2), ease: 'sine.inOut', repeat: -1, yoyo: true });
+    loop(gsap.to('.trajectory__halo', { opacity: 0.5, duration: d(2.2), ease: 'sine.inOut', repeat: -1, yoyo: true }));
     // node pulsing on the live DFW node
-    gsap.to('.trajectory__node--live circle:nth-child(2)', {
+    loop(gsap.to('.trajectory__node--live circle:nth-child(2)', {
       r: 28, opacity: 0.3, duration: d(1.6), ease: 'sine.inOut', repeat: -1, yoyo: true
-    });
+    }));
+  }
+
+  /* ---------- pause-motion toggle (WCAG 2.2.2) ---------- */
+  function motionToggle() {
+    var btn = document.getElementById('motionToggle');
+    if (!btn) return;
+    if (REDUCED || !hasGSAP) return;          // nothing loops in these modes
+    var label = btn.querySelector('span');
+
+    function apply(paused, save) {
+      motionPaused = paused;
+      loops.forEach(function (t) { if (paused) t.pause(); else t.resume(); });
+      onMotionChange.forEach(function (fn) { fn(); });
+      btn.setAttribute('aria-pressed', paused ? 'true' : 'false');
+      if (label) label.textContent = paused ? 'Play motion' : 'Pause motion';
+      if (save) { try { localStorage.setItem('ag-motion', paused ? 'paused' : 'on'); } catch (e) {} }
+    }
+
+    var saved = null;
+    try { saved = localStorage.getItem('ag-motion'); } catch (e) {}
+    btn.hidden = false;
+    apply(saved === 'paused', false);
+    btn.addEventListener('click', function () { apply(!motionPaused, true); });
   }
 
   /* ---------- nav + form ---------- */
@@ -713,7 +789,7 @@
       '<span>Lots of animation on this page. There is a lighter version.</span>' +
       '<a class="lite-offer__go" href="lite.html">Use lite</a>' +
       '<button class="lite-offer__no" type="button">No thanks</button>';
-    document.body.appendChild(bar);
+    document.body.insertBefore(bar, document.body.firstChild);
 
     function close(v) { remember(v); bar.remove(); }
     bar.querySelector('.lite-offer__go').addEventListener('click', function () { close('lite'); });
@@ -724,6 +800,7 @@
   // before first paint; by the time this runs, stored() reflects both.
   function autoLite() {
     if (REDUCED || stored()) return;
+    if (navigator.webdriver || /bot|crawl|spider|slurp|lighthouse|headless|pagespeed/i.test(navigator.userAgent)) return;
     var SETTLE = 2200, WINDOW = 4000, BAD_MS = 40, MIN = 3;
 
     setTimeout(function () {
@@ -766,6 +843,7 @@
     safe('magnetics', magnetics);
     safe('flowLayer', flowLayer);
     safe('ambient', ambient);
+    safe('motionToggle', motionToggle);
     safe('chrome', chrome);
     safe('liteOffer', liteOffer);
     safe('autoLite', autoLite);

@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Armaan Gugnani — AI research, systems, and a trajectory across three continents</title>
-<meta name="description" content="High school senior working at the intersection of AI, data, and mathematics. IEEE first author, Harvard Medical School research intern, USACO Gold, Microsoft AI Hackathon first place. Bangalore to Dubai to Frisco.">
+<title>Armaan Gugnani — AI research, systems, and a trajectory across three countries</title>
+<meta name="description" content="High school senior working at the intersection of AI, data, and mathematics. IEEE first author, Harvard Medical School research intern, USACO Gold, first place at the IUrban Teen × Microsoft AI Hackathon. Bangalore to Dubai to Frisco.">
 <meta name="theme-color" content="#070809">
 <script>
   // Runs before first paint: mark JS as available, and honour a saved
@@ -24,13 +24,39 @@
 
 <link rel="stylesheet" href="assets/css/site.css">
 
-<meta property="og:title" content="Armaan Gugnani — AI, research, and a trajectory across three continents">
-<meta property="og:description" content="IEEE first author, Harvard Medical School research intern, USACO Gold, Microsoft AI Hackathon first place. Bangalore to Dubai to Frisco.">
+<meta property="og:title" content="Armaan Gugnani — AI research, systems, and a trajectory across three countries">
+<meta property="og:description" content="IEEE first author, Harvard Medical School research intern, USACO Gold, first place at the IUrban Teen × Microsoft AI Hackathon. Bangalore to Dubai to Frisco.">
 <meta property="og:type" content="website">
-<meta property="og:url" content="https://armaangugnani.com">
+<meta property="og:url" content="https://armaangugnani.com/">
+<meta property="og:image" content="https://armaangugnani.com/assets/og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Armaan Gugnani — AI, research, systems. A trajectory from Bangalore to Dubai to Frisco.">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="canonical" href="https://armaangugnani.com/">
+<link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Person",
+  "name": "Armaan Gugnani",
+  "url": "https://armaangugnani.com/",
+  "image": "https://armaangugnani.com/assets/og-image.png",
+  "sameAs": ["https://www.linkedin.com/in/armaangugnani/"],
+  "affiliation": {
+    "@type": "HighSchool",
+    "name": "Independence High School",
+    "address": { "@type": "PostalAddress", "addressLocality": "Frisco", "addressRegion": "TX", "addressCountry": "US" }
+  },
+  "knowsAbout": ["Machine learning", "Artificial intelligence", "Applied mathematics", "Physics-informed neural operators", "Quantitative trading systems"]
+}
+</script>
 </head>
 
 <body>
+
+<a class="skip-link" href="#top">Skip to content</a>
 
 <!-- Cold Boot preloader. Terminal self-test, aperture iris closes to reveal the page. -->
 <div id="boot" class="boot" aria-hidden="true">
@@ -64,7 +90,7 @@
 <div id="cursor" class="cursor" aria-hidden="true"></div>
 
 <header id="nav" class="nav">
-  <a class="nav__brand" href="#top" aria-label="Home">
+  <a class="nav__brand" href="#top">
     <span class="nav__mark">AG</span>
     <span class="nav__name">Armaan Gugnani</span>
   </a>
@@ -77,7 +103,12 @@
     <a href="#ventures">Ventures</a>
     <a href="#contact">Contact</a>
   </nav>
-  <a href="#contact" class="nav__cta" data-magnetic><span>Get in touch</span></a>
+  <div class="nav__end">
+    <button class="nav__motion" id="motionToggle" type="button" aria-pressed="false" hidden>
+      <i aria-hidden="true"></i><span>Pause motion</span>
+    </button>
+    <a href="#contact" class="nav__cta" data-magnetic><span>Get in touch</span></a>
+  </div>
 </header>
 
 <main id="top">
@@ -90,120 +121,122 @@
         <i></i> Independence High School · Frisco, TX · Class of 2027
       </p>
 
-      <h1 class="hero__wordmark display">
-        <span class="hero__word hero__word--back">Armaan</span>
-        <!-- The aperture figure sits BETWEEN the two words. Scroll opens it, cursor steers it. -->
-        <span class="hero__figure" id="heroReveal" data-aperture-reveal>
-          <!-- base layer: the live trajectory diagram -->
-          <svg class="aperture__base" viewBox="0 0 1200 700" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
-            <defs>
-              <radialGradient id="halo" cx="50%" cy="50%" r="50%">
-                <stop offset="0%" stop-color="#7fe9ff" stop-opacity="0.55"/>
-                <stop offset="60%" stop-color="#7fe9ff" stop-opacity="0.05"/>
-                <stop offset="100%" stop-color="#7fe9ff" stop-opacity="0"/>
-              </radialGradient>
-              <linearGradient id="arcA" x1="0%" x2="100%" y1="0%" y2="0%">
-                <stop offset="0%" stop-color="#7fe9ff"/>
-                <stop offset="100%" stop-color="#e04a2c"/>
-              </linearGradient>
-              <linearGradient id="arcB" x1="0%" x2="100%" y1="0%" y2="0%">
-                <stop offset="0%" stop-color="#e04a2c"/>
-                <stop offset="100%" stop-color="#ffb089"/>
-              </linearGradient>
-              <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
-                <feGaussianBlur stdDeviation="6" result="b"/>
-                <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
-              </filter>
-            </defs>
-
-            <!-- faint globe grid -->
-            <g class="trajectory__grid" fill="none" stroke="#2c3034" stroke-width="0.6">
-              <circle cx="600" cy="350" r="300"/>
-              <circle cx="600" cy="350" r="220"/>
-              <circle cx="600" cy="350" r="140"/>
-              <circle cx="600" cy="350" r="70"/>
-              <line x1="300" y1="350" x2="900" y2="350"/>
-              <line x1="600" y1="50"  x2="600" y2="650"/>
-              <line x1="388" y1="138" x2="812" y2="562"/>
-              <line x1="812" y1="138" x2="388" y2="562"/>
-            </g>
-
-            <!-- halo under the active node -->
-            <circle cx="820" cy="340" r="220" fill="url(#halo)" class="trajectory__halo"/>
-
-            <!-- arcs: BLR -> DXB, DXB -> DFW -->
-            <path class="trajectory__arc" d="M 360 440 Q 500 180 580 360" stroke="url(#arcA)" stroke-width="2" fill="none" filter="url(#glow)"/>
-            <path class="trajectory__arc" d="M 580 360 Q 720 160 820 340" stroke="url(#arcB)" stroke-width="2" fill="none" filter="url(#glow)"/>
-
-            <!-- travelling pulse (JS-animated via stroke-dashoffset) -->
-            <path id="pulsePath" class="trajectory__pulse" d="M 360 440 Q 500 180 580 360 Q 720 160 820 340" stroke="#eef0f3" stroke-width="2.5" fill="none" filter="url(#glow)"/>
-
-            <!-- nodes -->
-            <g class="trajectory__nodes" font-family="JetBrains Mono, monospace" font-size="12" fill="#eef0f3">
-              <g class="trajectory__node" data-node="blr">
-                <circle cx="360" cy="440" r="7" fill="#9ba1a9"/>
-                <circle cx="360" cy="440" r="18" fill="none" stroke="#9ba1a9" stroke-width="0.5" opacity="0.6"/>
-                <text x="360" y="478" text-anchor="middle" fill="#9ba1a9">BLR</text>
-                <text x="360" y="494" text-anchor="middle" font-size="9" fill="#666c74">13.0°N  77.6°E</text>
-              </g>
-              <g class="trajectory__node" data-node="dxb">
-                <circle cx="580" cy="360" r="7" fill="#9ba1a9"/>
-                <circle cx="580" cy="360" r="18" fill="none" stroke="#9ba1a9" stroke-width="0.5" opacity="0.6"/>
-                <text x="580" y="340" text-anchor="middle" fill="#9ba1a9">DXB</text>
-                <text x="580" y="324" text-anchor="middle" font-size="9" fill="#666c74">25.2°N  55.3°E</text>
-              </g>
-              <g class="trajectory__node trajectory__node--live" data-node="dfw">
-                <circle cx="820" cy="340" r="9" fill="#7fe9ff"/>
-                <circle cx="820" cy="340" r="22" fill="none" stroke="#7fe9ff" stroke-width="0.8"/>
-                <circle cx="820" cy="340" r="36" fill="none" stroke="#7fe9ff" stroke-width="0.3" opacity="0.5"/>
-                <text x="820" y="316" text-anchor="middle" fill="#7fe9ff">DFW</text>
-                <text x="820" y="300" text-anchor="middle" font-size="9" fill="#7fe9ff" opacity="0.7">33.1°N  96.8°W</text>
-              </g>
-            </g>
-
-            <!-- corner tick marks -->
-            <g stroke="#79808a" stroke-width="0.8" fill="none">
-              <path d="M 40 40 h 20 M 40 40 v 20"/>
-              <path d="M 1160 40 h -20 M 1160 40 v 20"/>
-              <path d="M 40 660 h 20 M 40 660 v -20"/>
-              <path d="M 1160 660 h -20 M 1160 660 v -20"/>
-            </g>
-            <text x="40" y="20" font-family="JetBrains Mono, monospace" font-size="10" fill="#79808a">TRAJECTORY · BLR → DXB → DFW</text>
-            <text x="1160" y="20" text-anchor="end" font-family="JetBrains Mono, monospace" font-size="10" fill="#79808a">AG · ARCHIVE</text>
-          </svg>
-
-          <!-- hover layer: matte sealed plate the aperture erodes -->
-          <span class="aperture__hover" aria-hidden="true">
-            <svg viewBox="0 0 1200 700" preserveAspectRatio="xMidYMid slice">
+      <div class="hero__mark">
+        <h1 class="hero__wordmark display">
+          <span class="hero__word hero__word--back">Armaan</span>
+          <span class="hero__word hero__word--front">Gugnani</span>
+        </h1>
+        <!-- Decorative: sits behind the name. Scroll opens it, the cursor steers it. -->
+          <div class="hero__figure" id="heroReveal" aria-hidden="true" data-aperture-reveal>
+            <!-- base layer: the live trajectory diagram -->
+            <svg class="aperture__base" viewBox="0 0 1200 700" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
               <defs>
-                <linearGradient id="plate" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%"  stop-color="#141618"/>
-                  <stop offset="50%" stop-color="#1a1d20"/>
-                  <stop offset="100%" stop-color="#0b0c0d"/>
+                <radialGradient id="halo" cx="50%" cy="50%" r="50%">
+                  <stop offset="0%" stop-color="#7fe9ff" stop-opacity="0.55"/>
+                  <stop offset="60%" stop-color="#7fe9ff" stop-opacity="0.05"/>
+                  <stop offset="100%" stop-color="#7fe9ff" stop-opacity="0"/>
+                </radialGradient>
+                <linearGradient id="arcA" x1="0%" x2="100%" y1="0%" y2="0%">
+                  <stop offset="0%" stop-color="#7fe9ff"/>
+                  <stop offset="100%" stop-color="#e04a2c"/>
                 </linearGradient>
-                <pattern id="etch" width="24" height="24" patternUnits="userSpaceOnUse">
-                  <path d="M 0 24 L 24 0" stroke="#2c3034" stroke-width="0.4"/>
-                </pattern>
+                <linearGradient id="arcB" x1="0%" x2="100%" y1="0%" y2="0%">
+                  <stop offset="0%" stop-color="#e04a2c"/>
+                  <stop offset="100%" stop-color="#ffb089"/>
+                </linearGradient>
+                <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+                  <feGaussianBlur stdDeviation="6" result="b"/>
+                  <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+                </filter>
               </defs>
-              <rect width="1200" height="700" fill="url(#plate)"/>
-              <rect width="1200" height="700" fill="url(#etch)" opacity="0.6"/>
-              <!-- subtle sealed-plate branding -->
-              <g fill="#2c3034" font-family="JetBrains Mono, monospace">
-                <text x="600" y="360" text-anchor="middle" font-size="28" letter-spacing="18">SEALED</text>
-                <text x="600" y="396" text-anchor="middle" font-size="10" letter-spacing="4">MOVE · CURSOR · TO · OPEN</text>
+
+              <!-- faint globe grid -->
+              <g class="trajectory__grid" fill="none" stroke="#2c3034" stroke-width="0.6">
+                <circle cx="600" cy="350" r="300"/>
+                <circle cx="600" cy="350" r="220"/>
+                <circle cx="600" cy="350" r="140"/>
+                <circle cx="600" cy="350" r="70"/>
+                <line x1="300" y1="350" x2="900" y2="350"/>
+                <line x1="600" y1="50"  x2="600" y2="650"/>
+                <line x1="388" y1="138" x2="812" y2="562"/>
+                <line x1="812" y1="138" x2="388" y2="562"/>
               </g>
+
+              <!-- halo under the active node -->
+              <circle cx="820" cy="340" r="220" fill="url(#halo)" class="trajectory__halo"/>
+
+              <!-- arcs: BLR -> DXB, DXB -> DFW -->
+              <path class="trajectory__arc" d="M 360 440 Q 500 180 580 360" stroke="url(#arcA)" stroke-width="2" fill="none" filter="url(#glow)"/>
+              <path class="trajectory__arc" d="M 580 360 Q 720 160 820 340" stroke="url(#arcB)" stroke-width="2" fill="none" filter="url(#glow)"/>
+
+              <!-- travelling pulse (JS-animated via stroke-dashoffset) -->
+              <path id="pulsePath" class="trajectory__pulse" d="M 360 440 Q 500 180 580 360 Q 720 160 820 340" stroke="#eef0f3" stroke-width="2.5" fill="none" filter="url(#glow)"/>
+
+              <!-- nodes -->
+              <g class="trajectory__nodes" font-family="JetBrains Mono, monospace" font-size="12" fill="#eef0f3">
+                <g class="trajectory__node" data-node="blr">
+                  <circle cx="360" cy="440" r="7" fill="#9ba1a9"/>
+                  <circle cx="360" cy="440" r="18" fill="none" stroke="#9ba1a9" stroke-width="0.5" opacity="0.6"/>
+                  <text x="360" y="478" text-anchor="middle" fill="#9ba1a9">BLR</text>
+                  <text x="360" y="494" text-anchor="middle" font-size="9" fill="#666c74">13.0°N  77.6°E</text>
+                </g>
+                <g class="trajectory__node" data-node="dxb">
+                  <circle cx="580" cy="360" r="7" fill="#9ba1a9"/>
+                  <circle cx="580" cy="360" r="18" fill="none" stroke="#9ba1a9" stroke-width="0.5" opacity="0.6"/>
+                  <text x="580" y="340" text-anchor="middle" fill="#9ba1a9">DXB</text>
+                  <text x="580" y="324" text-anchor="middle" font-size="9" fill="#666c74">25.2°N  55.3°E</text>
+                </g>
+                <g class="trajectory__node trajectory__node--live" data-node="dfw">
+                  <circle cx="820" cy="340" r="9" fill="#7fe9ff"/>
+                  <circle cx="820" cy="340" r="22" fill="none" stroke="#7fe9ff" stroke-width="0.8"/>
+                  <circle cx="820" cy="340" r="36" fill="none" stroke="#7fe9ff" stroke-width="0.3" opacity="0.5"/>
+                  <text x="820" y="316" text-anchor="middle" fill="#7fe9ff">DFW</text>
+                  <text x="820" y="300" text-anchor="middle" font-size="9" fill="#7fe9ff" opacity="0.7">33.1°N  96.8°W</text>
+                </g>
+              </g>
+
+              <!-- corner tick marks -->
+              <g stroke="#79808a" stroke-width="0.8" fill="none">
+                <path d="M 40 40 h 20 M 40 40 v 20"/>
+                <path d="M 1160 40 h -20 M 1160 40 v 20"/>
+                <path d="M 40 660 h 20 M 40 660 v -20"/>
+                <path d="M 1160 660 h -20 M 1160 660 v -20"/>
+              </g>
+              <text x="40" y="20" font-family="JetBrains Mono, monospace" font-size="10" fill="#79808a">TRAJECTORY · BLR → DXB → DFW</text>
+              <text x="1160" y="20" text-anchor="end" font-family="JetBrains Mono, monospace" font-size="10" fill="#79808a">AG · ARCHIVE</text>
             </svg>
-          </span>
-        </span>
-        <span class="hero__word hero__word--front">Gugnani</span>
-      </h1>
+
+            <!-- hover layer: matte sealed plate the aperture erodes -->
+            <div class="aperture__hover">
+              <svg viewBox="0 0 1200 700" preserveAspectRatio="xMidYMid slice">
+                <defs>
+                  <linearGradient id="plate" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%"  stop-color="#141618"/>
+                    <stop offset="50%" stop-color="#1a1d20"/>
+                    <stop offset="100%" stop-color="#0b0c0d"/>
+                  </linearGradient>
+                  <pattern id="etch" width="24" height="24" patternUnits="userSpaceOnUse">
+                    <path d="M 0 24 L 24 0" stroke="#2c3034" stroke-width="0.4"/>
+                  </pattern>
+                </defs>
+                <rect width="1200" height="700" fill="url(#plate)"/>
+                <rect width="1200" height="700" fill="url(#etch)" opacity="0.6"/>
+                <!-- subtle sealed-plate branding -->
+                <g fill="#2c3034" font-family="JetBrains Mono, monospace">
+                  <text x="600" y="360" text-anchor="middle" font-size="28" letter-spacing="18">SEALED</text>
+                  <text x="600" y="396" text-anchor="middle" font-size="10" letter-spacing="4">MOVE · CURSOR · TO · OPEN</text>
+                </g>
+              </svg>
+            </div>
+          </div>
+      </div>
 
       <p class="hero__hint" id="heroHint"><b>▸</b> Scroll to open · move to look</p>
 
       <div class="hero__foot">
         <p class="hero__lede">
           High school senior working at the intersection of <b>AI, data, and applied mathematics</b>.
-          Three continents, six schools, one trajectory — research, systems, and the clubs that teach the next cohort.
+          Three countries, six schools, one trajectory — research, systems, and the clubs that teach the next cohort.
         </p>
         <div class="hero__ctas">
           <a href="#contact" class="btn btn--primary" data-magnetic><span>Get in touch</span></a>
@@ -230,7 +263,7 @@
       <span class="marquee__item">IEEE First Author</span><span class="marquee__dot">◆</span>
       <span class="marquee__item">Autonomous Quant Systems</span><span class="marquee__dot">◆</span>
       <span class="marquee__item">Harvard Medical School</span><span class="marquee__dot">◆</span>
-      <span class="marquee__item">Microsoft AI Hackathon · 1st</span><span class="marquee__dot">◆</span>
+      <span class="marquee__item">IUrban Teen × Microsoft AI Hackathon · 1st</span><span class="marquee__dot">◆</span>
       <span class="marquee__item">John Locke Shortlist</span><span class="marquee__dot">◆</span>
       <span class="marquee__item">Blue Ocean · Top 250 / 23,000+</span><span class="marquee__dot">◆</span>
       <span class="marquee__item">Modeling the Future · CRA Top 8</span><span class="marquee__dot">◆</span>
@@ -242,7 +275,7 @@
     <div class="section__inner">
       <p class="eyebrow"><i></i> About</p>
       <p id="manifesto" class="manifesto__body display">
-        Three continents. Six schools. One line through research, systems, and the clubs that teach the next cohort.
+        Three countries. Six schools. One line through research, systems, and the clubs that teach the next cohort.
         I build with AI where the stakes are real — cardiac imaging, fraud detection, dental diagnosis, urban heat — and I write about where the technology is going.
       </p>
       <p class="manifesto__sig">— AG · Frisco, TX</p>
@@ -254,12 +287,12 @@
     <div class="section__inner stats__inner">
       <p class="eyebrow"><i></i> By the numbers</p>
       <div class="stats__grid">
-        <div class="stat"><b class="stat__n" data-count="1560">1560</b><i class="stat__line"></i><span class="stat__lbl">SAT · out of 1600</span></div>
-        <div class="stat"><b class="stat__n" data-count="29">29</b><span class="stat__sub">of 395</span><i class="stat__line"></i><span class="stat__lbl">Class rank · IHS</span></div>
-        <div class="stat"><b class="stat__n" data-count="130" data-plus>130<b class="stat__plus">+</b></b><i class="stat__line"></i><span class="stat__lbl">Schools in the CodeSpark network · 8 countries</span></div>
-        <div class="stat"><b class="stat__n" data-count="100" data-plus>100<b class="stat__plus">+</b></b><i class="stat__line"></i><span class="stat__lbl">Volunteer tutoring hours · Schoolhouse.world</span></div>
-        <div class="stat"><b class="stat__n" data-count="23000" data-group data-plus>23,000<b class="stat__plus">+</b></b><i class="stat__line"></i><span class="stat__lbl">Entrants in Blue Ocean · placed top 250</span></div>
-        <div class="stat"><b class="stat__n" data-count="20" data-plus>20<b class="stat__plus">+</b></b><i class="stat__line"></i><span class="stat__lbl">Rockets built · Whaleworks</span></div>
+        <div class="stat"><b class="stat__n"><span class="sr-only">1560</span><span aria-hidden="true" data-count="1560">1560</span></b><i class="stat__line"></i><span class="stat__lbl">SAT · out of 1600</span></div>
+        <div class="stat"><b class="stat__n"><span class="sr-only">29</span><span aria-hidden="true" data-count="29">29</span></b><span class="stat__sub">of 395</span><i class="stat__line"></i><span class="stat__lbl">Class rank · IHS</span></div>
+        <div class="stat"><b class="stat__n"><span class="sr-only">130+</span><span aria-hidden="true" data-count="130" data-plus>130<b class="stat__plus">+</b></span></b><i class="stat__line"></i><span class="stat__lbl">Schools in the CodeSpark network · 8 countries</span></div>
+        <div class="stat"><b class="stat__n"><span class="sr-only">100+</span><span aria-hidden="true" data-count="100" data-plus>100<b class="stat__plus">+</b></span></b><i class="stat__line"></i><span class="stat__lbl">Volunteer tutoring hours · Schoolhouse.world</span></div>
+        <div class="stat"><b class="stat__n"><span class="sr-only">23,000+</span><span aria-hidden="true" data-count="23000" data-group data-plus>23,000<b class="stat__plus">+</b></span></b><i class="stat__line"></i><span class="stat__lbl">Entrants in Blue Ocean · placed top 250</span></div>
+        <div class="stat"><b class="stat__n"><span class="sr-only">20+</span><span aria-hidden="true" data-count="20" data-plus>20<b class="stat__plus">+</b></span></b><i class="stat__line"></i><span class="stat__lbl">Rockets built · Whaleworks</span></div>
       </div>
     </div>
   </section>
@@ -311,7 +344,7 @@
             <li><b>Fowler MS</b> → <b>Liberty HS</b> (Fall '23) → <b>Independence HS</b> (Spring '24 →).</li>
             <li>Too young for 8th grade on paper. Second time a principal tested me in anyway.</li>
             <li>Where the research, internships, publications and competition work took shape.</li>
-            <li><b>IEEE first author</b> · <b>Harvard Med research</b> · <b>USACO Gold</b> · <b>Microsoft AI Hackathon 1st</b> · <b>CodeSparkClubs founder</b>.</li>
+            <li><b>IEEE first author</b> · <b>Harvard Med research</b> · <b>USACO Gold</b> · <b>Microsoft AI Hackathon 1st</b> · <b>CodeSparkClubs co‑founder</b>.</li>
           </ul>
         </article>
 
@@ -391,11 +424,11 @@
           <h3 class="case__title display">SMG Signals</h3>
         </div>
         <dl class="case__stats">
-          <div><dt>Universe</dt><dd>~2,900</dd><span>US names scanned daily</span></div>
-          <div><dt>Signals</dt><dd>4</dd><span>independent sleeves</span></div>
-          <div><dt>Runs</dt><dd>5×</dd><span>per trading day</span></div>
-          <div><dt>Agents</dt><dd>7</dd><span>scheduled cloud agents</span></div>
-          <div><dt>Tests</dt><dd>95</dd><span>unit tests</span></div>
+          <div><dt>Universe</dt><dd>~2,900<span>US names scanned daily</span></dd></div>
+          <div><dt>Signals</dt><dd>4<span>independent sleeves</span></dd></div>
+          <div><dt>Runs</dt><dd>5×<span>per trading day</span></dd></div>
+          <div><dt>Agents</dt><dd>7<span>scheduled cloud agents</span></dd></div>
+          <div><dt>Tests</dt><dd>95<span>unit tests</span></dd></div>
         </dl>
       </header>
 
@@ -445,7 +478,7 @@
         <div class="case__col" data-reveal>
           <h4 class="case__h">Sizing · goal mode</h4>
           <p>Every day it computes the closed‑form probability of reaching the equity goal by the deadline, then picks the risk level that maximizes it. Stickiness and a lock‑at‑goal rule keep it from thrashing, and per‑level μ and σ come from a two‑year backtest.</p>
-          <p class="case__formula" aria-label="P equals Phi of n mu minus the log of G over x, all over sigma root n">P = Φ( (n·μ − ln(G/x)) / (σ√n) )</p>
+          <p class="case__formula"><span class="sr-only">P equals Phi of: n times mu, minus the natural log of G over x, all divided by sigma times the square root of n.</span><span aria-hidden="true">P = Φ( (n·μ − ln(G/x)) / (σ√n) )</span></p>
           <h4 class="case__h">Risk</h4>
           <p>Hard −12% stops that never loosen, 10‑day‑low exits, pyramid adds, profit locks, and a fat‑tailed, correlated Monte Carlo that models short‑squeeze convexity.</p>
         </div>
@@ -555,7 +588,7 @@
         <p class="card__d">Advanced to the Gold division — top ~10% nationwide.</p>
       </li>
       <li class="card"><span class="card__n">04</span>
-        <h3 class="card__t">Microsoft AI Hackathon · 1st Place</h3>
+        <h3 class="card__t">IUrban Teen × Microsoft AI Hackathon · 1st Place</h3>
         <p class="card__m">AI for Responsibility &amp; Inclusivity · Dallas 2026</p>
         <p class="card__d">Algorithmic validation app scoring LLM output on a 0–100 confidence scale via academic retrieval.</p>
       </li>
@@ -760,8 +793,8 @@
 
       <form class="contact__form" id="requestForm" action="mailto:armaan.gugnani.work@gmail.com" method="post" enctype="text/plain">
         <h3 class="display">Send a note</h3>
-        <label>Name<input type="text" name="name" required></label>
-        <label>Email<input type="email" name="email" required></label>
+        <label>Name<input type="text" name="name" autocomplete="name" required></label>
+        <label>Email<input type="email" name="email" autocomplete="email" required></label>
         <label>What are you writing about?
           <select name="topic">
             <option>Research collaboration</option>
