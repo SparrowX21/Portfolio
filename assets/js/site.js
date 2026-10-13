@@ -114,7 +114,8 @@
       w.style.overflow = 'hidden';
       w.style.overflow = 'clip';          // ignored where unsupported
       w.style.verticalAlign = 'top';      // clipped inline-blocks lose their text baseline
-      w.style.paddingBottom = '0.06em';
+      w.style.paddingBottom = '0.16em';   // room for g/p/y below the baseline
+      w.style.marginBottom = '-0.1em';    // without changing the line spacing
     });
     return s;
   }
@@ -163,6 +164,10 @@
       whenFontsReady(done);
       return;
     }
+
+    // GSAP is here, so the timeline (plus the 2.5s font timeout) opens the iris.
+    // Drop the CSS failsafe: it keeps ticking in background tabs while rAF sleeps.
+    boot.style.animation = 'none';
 
     var log = document.getElementById('bootLog');
     var count = document.getElementById('bootCount');
@@ -421,7 +426,6 @@
     if (!hasGSAP) return;
     document.querySelectorAll('[data-count]').forEach(function (el) {
       var end = parseFloat(el.getAttribute('data-count'));
-      var group = el.hasAttribute('data-group');
       var decimals = parseInt(el.getAttribute('data-decimals') || '0', 10);
       var plus = el.hasAttribute('data-plus');
       var stat = el.closest('.stat');
@@ -431,7 +435,7 @@
       // always holds the real number, and the HTML ships with it too.
       function write(v) {
         var n = decimals ? Number(v.toFixed(decimals)) : Math.round(v);
-        var body = decimals ? n.toFixed(decimals) : group ? n.toLocaleString('en-US') : String(n);
+        var body = decimals ? n.toFixed(decimals) : String(n);
         el.innerHTML = body + (plus ? '<b class="stat__plus">+</b>' : '');
       }
 
@@ -647,17 +651,15 @@
     function q(sel) { return document.querySelector(sel); }
     function make(tag, cls, parent) { var el = document.createElement(tag); el.className = cls; parent.appendChild(el); return el; }
 
-    ['.marquee', '.manifesto', '.stats', '.trajectory', '.research', '.systems',
-     '.experience', '.honors', '.ventures', '.service', '.certs', '.contact', '.footer']
-      .forEach(function (sel, i) {
-        var host = q(sel); if (!host) return;
-        var seam = make('i', 'seam', host);
-        gsap.set(seam, { transformOrigin: i % 2 ? 'right center' : 'left center' });
-        gsap.to(seam, {
-          scaleX: 1, ease: 'power2.inOut',
-          scrollTrigger: { trigger: host, start: 'top 100%', end: 'top 45%', scrub: d(0.5) }
-        });
+    // One seam per section boundary, alternating direction in page order.
+    gsap.utils.toArray('main > section:not(.hero), .footer').forEach(function (host, i) {
+      var seam = make('i', 'seam', host);
+      gsap.set(seam, { transformOrigin: i % 2 ? 'right center' : 'left center' });
+      gsap.to(seam, {
+        scaleX: 1, ease: 'power2.inOut',
+        scrollTrigger: { trigger: host, start: 'top 100%', end: 'top 45%', scrub: d(0.5) }
       });
+    });
 
     // Shutter: hero -> marquee
     var band = q('.marquee');
@@ -690,23 +692,6 @@
         duration: d(1), ease: 'power4.out',
         stagger: { each: d(0.045) },
         scrollTrigger: { trigger: '.deck', start: 'top 84%' }
-      });
-    }
-
-    // Circuit close: research -> systems. The pipeline lights stage by stage
-    // as it scrolls through, the way a signal propagates along a wire.
-    var pipe = q('.pipe');
-    if (pipe) {
-      var stages = gsap.utils.toArray('.pipe__step');
-      var lightStages = function (p) {
-        var lit = p > 0 ? Math.ceil(p * stages.length) : 0;
-        stages.forEach(function (s, i) { s.classList.toggle('is-lit', i < lit); });
-      };
-      pipe.classList.add('pipe--armed');
-      ScrollTrigger.create({
-        trigger: pipe, start: 'top 82%', end: 'bottom 50%',
-        onUpdate: function (self) { lightStages(self.progress); },
-        onRefresh: function (self) { lightStages(self.progress); }
       });
     }
 
@@ -780,14 +765,12 @@
     var btn = document.getElementById('motionToggle');
     if (!btn) return;
     if (REDUCED || !hasGSAP) return;          // nothing loops in these modes
-    var label = btn.querySelector('span');
 
     function apply(paused, save) {
       motionPaused = paused;
       syncLoops();
       onMotionChange.forEach(function (fn) { fn(); });
       btn.setAttribute('aria-pressed', paused ? 'true' : 'false');
-      if (label) label.textContent = paused ? 'Play motion' : 'Pause motion';
       if (save) { try { localStorage.setItem('ag-motion', paused ? 'paused' : 'on'); } catch (e) {} }
     }
 
@@ -810,12 +793,18 @@
     var menu = document.getElementById('menuToggle');
     var links = document.getElementById('navLinks');
     if (nav && menu && links) {
+      // Links are hidden below 1000px only once this button works.
+      nav.classList.add('nav--menu');
       var setOpen = function (open) {
         nav.classList.toggle('is-open', open);
         menu.setAttribute('aria-expanded', open ? 'true' : 'false');
         var label = menu.querySelector('span');
         if (label) label.textContent = open ? 'Close' : 'Menu';
+        if (open) { var first = links.querySelector('a'); if (first) first.focus(); }
       };
+      nav.addEventListener('focusout', function (e) {
+        if (nav.classList.contains('is-open') && !nav.contains(e.relatedTarget)) setOpen(false);
+      });
       menu.addEventListener('click', function () { setOpen(!nav.classList.contains('is-open')); });
       links.addEventListener('click', function (e) { if (e.target.closest('a')) setOpen(false); });
       document.addEventListener('keydown', function (e) {

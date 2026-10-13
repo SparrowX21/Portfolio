@@ -18,7 +18,7 @@ GitHub Pages caches files for 10 minutes and ignores query strings, so first-par
 ## Layout
 
 ```
-index.html              hero + 10 sections + footer
+index.html              hero + 11 sections + footer
 lite.html               accessible fallback (no animations)
 assets/
   css/site.css          palette, typography, every component
@@ -26,21 +26,9 @@ assets/
   js/aperture-reveal.js UMD aperture library
 ```
 
-## Hostinger deploy (one-time setup)
+## Hosting
 
-Hostinger pulls from this GitHub repo on every push.
-
-1. Hostinger → **hPanel** → **Websites** → `armaangugnani.com` → **Advanced** → **Git**.
-2. Repository URL: `https://github.com/SparrowX21/Portfolio.git`
-3. Branch: `main`
-4. Install path: `public_html`
-5. **Create**.
-6. Copy the **webhook URL** Hostinger gives you.
-7. GitHub → **this repo** → **Settings** → **Webhooks** → **Add webhook** → paste the URL → Content-type `application/json` → events: *Just the push event* → Save.
-
-Every push to `main` now auto-deploys.
-
-For the very first deploy without a webhook, click **Deploy** inside the Hostinger Git panel.
+GitHub Pages serves `main` at https://armaangugnani.com (custom domain via `CNAME`; DNS at Hostinger points the apex ALIAS and `www` CNAME to `sparrowx21.github.io`). Every push to `main` deploys in about a minute.
 
 ## Local dev
 
