@@ -23,9 +23,9 @@
 <link rel="preload" href="assets/fonts/bigshouldersdisplay-fC1_PZJEZG-e9gHhdI4-NBbfd2ys3SjJCx1czNDu.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="assets/fonts/instrumentsans-pxiTypc9vsFDm051Uf6KVwgkfoSxQ0GsQv8ToedPibnr0SZe1Q.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="assets/fonts/jetbrainsmono-tDbv2o-flEEny0FZhsfKu5WU4zr3E_BX0PnT8RD8yKwBNntkaToggR7BYRbKPxDcwg.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="assets/css/fonts.css?v=5">
+<link rel="stylesheet" href="assets/css/fonts.css?v=6">
 
-<link rel="stylesheet" href="assets/css/site.css?v=5">
+<link rel="stylesheet" href="assets/css/site.css?v=6">
 
 <meta property="og:title" content="Armaan Gugnani — AI research, systems, and a trajectory across three countries">
 <meta property="og:description" content="IEEE first author, Harvard Medical School research intern, USACO Gold, first place at the iUrban Teen × Microsoft AI Hackathon. Bangalore to Dubai to Frisco.">
@@ -102,7 +102,6 @@
     <a href="#research">Research</a>
     <a href="#experience">Experience</a>
     <a href="#honors">Honors</a>
-    <a href="#systems">Systems</a>
     <a href="#ventures">Ventures</a>
     <a href="#contact">Contact</a>
   </nav>
@@ -267,7 +266,7 @@
       <span class="marquee__item">Machine Learning Research</span><span class="marquee__dot">◆</span>
       <span class="marquee__item">USACO Gold</span><span class="marquee__dot">◆</span>
       <span class="marquee__item">IEEE First Author</span><span class="marquee__dot">◆</span>
-      <span class="marquee__item">Autonomous Quant Systems</span><span class="marquee__dot">◆</span>
+      <span class="marquee__item">Quant Trading Model</span><span class="marquee__dot">◆</span>
       <span class="marquee__item">Harvard Medical School</span><span class="marquee__dot">◆</span>
       <span class="marquee__item">iUrban Teen × Microsoft AI Hackathon · 1st</span><span class="marquee__dot">◆</span>
       <span class="marquee__item">John Locke Shortlist</span><span class="marquee__dot">◆</span>
@@ -554,27 +553,6 @@
     </ol>
   </section>
 
-  <!-- =================== SYSTEMS =================== -->
-  <section class="systems" id="systems">
-    <div class="section__head">
-      <p class="eyebrow"><i></i> Systems</p>
-      <h2 class="section__title display" data-split-chars>Markets in. Trade tickets out.</h2>
-    </div>
-
-    <article class="case" data-reveal>
-      <span class="case__tag">DECA Stock Market Game · 2026 · simulated portfolio</span>
-      <h3 class="case__title display">SMG Signals</h3>
-      <p class="case__lede">A quant system for my DECA team. It scans the US market daily, scores trades across four strategies, sizes risk to maximize the odds of hitting our goal, and emails verified trade tickets five times a trading day.</p>
-      <dl class="case__stats">
-        <div><dt>Universe</dt><dd>~2,900<span>stocks scanned daily</span></dd></div>
-        <div><dt>Runs</dt><dd>5×<span>per trading day</span></dd></div>
-        <div><dt>Agents</dt><dd>7<span>verify every ticket</span></dd></div>
-        <div><dt>Tests</dt><dd>95<span>unit tests</span></dd></div>
-      </dl>
-      <p class="case__note"><b>Finding:</b> the obvious momentum edge was a data artifact. It vanished once survivorship bias and reverse splits were corrected.</p>
-    </article>
-  </section>
-
   <!-- =================== VENTURES (aperture cards) =================== -->
   <section class="ventures" id="ventures">
     <div class="section__head">
@@ -652,6 +630,18 @@
             <h3 class="module__name display">Go Green, Act Smart</h3>
             <p class="module__d">ML model that predicts individual monthly carbon emissions and returns personalized reduction plans.</p>
             <p class="module__meta">Personal-emissions ML · recommendations</p>
+          </div>
+        </div>
+        <div class="aperture__hover module__hover"></div>
+      </div>
+
+      <div class="module" data-aperture-reveal>
+        <div class="aperture__base module__base" data-tint="cyan">
+          <div class="module__content">
+            <span class="module__role">Builder</span>
+            <h3 class="module__name display">Quant Model</h3>
+            <p class="module__d">Trading model for my DECA Stock Market Game team's simulated portfolio. Scans ~2,900 US stocks daily, sizes risk, and emails verified trade tickets five times a trading day.</p>
+            <p class="module__meta">Python · GitHub Actions · 95 tests</p>
           </div>
         </div>
         <div class="aperture__hover module__hover"></div>
@@ -771,7 +761,6 @@
         <li><a href="#trajectory">Trajectory</a></li>
         <li><a href="#research">Research</a></li>
         <li><a href="#experience">Experience</a></li>
-        <li><a href="#systems">Systems</a></li>
       </ul>
     </div>
     <div>
@@ -798,7 +787,7 @@
 <script defer src="assets/vendor/ScrollTrigger.min.js"></script>     <!-- ScrollTrigger 3.12.5 -->
 <script defer src="assets/vendor/lenis.min.js"></script>             <!-- Lenis 1.1.13 -->
 <script defer src="assets/vendor/split-type.min.js"></script>        <!-- SplitType 0.3.4 -->
-<script defer src="assets/js/aperture-reveal.js?v=5"></script>
-<script defer src="assets/js/site.js?v=5"></script>
+<script defer src="assets/js/aperture-reveal.js?v=6"></script>
+<script defer src="assets/js/site.js?v=6"></script>
 </body>
 </html>
